@@ -26,17 +26,16 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
     const res = response.data;
-
     // 当状态值不为200判断为错误
     if (res.code !== 200) {
-      if (res.status === 401) {
+      if (res.code === 401) {
         ElMessage({
           type: 'error',
           duration: TIMEOUT_SECOND * 1000,
           message: '登录超时'
         });
 
-        store.dispatch('user/resetToken').then(() => {
+        store.dispatch('resetToken').then(() => {
           location.reload();
         });
       }

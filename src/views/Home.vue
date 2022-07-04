@@ -1,11 +1,32 @@
-
 <script lang="ts" setup>
-import {ref} from 'vue'
-import { ElCard } from 'element-plus'
+import { onMounted, ref } from "vue"
+import { ElCard,ElIcon } from "element-plus"
+import { useRouter } from "vue-router"
+import { menuList } from "src/api/menu"
 
-let modules = ref([{id: 1,icon:'123',name:'test'}])
+const router = useRouter()
 
-let navigate = () => {
+interface menuItem {
+  id: string
+  icon: string
+  name: string
+  order: number
+  routeName: string
+}
+let menus = ref<any[]>([]);
+
+// let menus = ref<menuItem[]>([])
+
+onMounted(async ()=>{
+let { data } = await menuList({})
+  menus.value = data;
+})
+
+
+// menus.value = data
+
+let handleNavigate = (item: menuItem, evt: any) => {
+  router.push({ name: item.routeName })
 }
 
 </script>
@@ -13,16 +34,22 @@ let navigate = () => {
 <template>
   <div class="home">
     <div class="cards">
-      <el-card class="card" :body-style="{ padding: 0 }" shadow="hover" :key="item.id" v-for="item in modules">
-        <div class="card-item" @click="navigate">
-          <i :class="item.icon"></i>
+      <el-card
+        class="card"
+        :body-style="{ padding: 0 }"
+        shadow="hover"
+        :key="item.id"
+        v-for="item in menus"
+      >
+        <div class="card-item" @click="handleNavigate(item, $event)">
+          <!-- <i :class="item.icon"></i> -->
+          <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.name }}</span>
         </div>
       </el-card>
     </div>
   </div>
 </template>
-
 
 <style lang="scss">
 .home {
@@ -41,6 +68,9 @@ let navigate = () => {
       text-align: center;
       color: #1d1d1d;
       .card-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         padding: 20px;
       }
       &:last-child {
