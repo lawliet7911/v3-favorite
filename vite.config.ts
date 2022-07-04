@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      'src': resolve(__dirname, 'src'),
+      src: resolve(__dirname, 'src'),
     },
   },
   base: './',
@@ -17,7 +17,8 @@ export default defineConfig({
     cors: true,
     proxy: {
       '^.api': {
-        target: 'http://192.168.22.122:5656',
+        target: 'http://192.168.0.105:5656',
+        // target: 'http://192.168.22.122:5656',
         ws: true,
         secure: false,
       },

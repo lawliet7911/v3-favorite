@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
-import { useStore } from "vuex"
-import { useRouter } from "vue-router"
-import MdEditor from "md-editor-v3"
-import "md-editor-v3/lib/style.css"
-import { ElNotification } from "element-plus"
-import { ToolbarNames } from "md-editor-v3"
-import {dateFormat} from 'src/utils/date'
+import { ref, onMounted, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import MdEditor from 'md-editor-v3'
+import './notebookEdit.scss'
+import 'md-editor-v3/lib/style.css'
+import { ElNotification, ElMessageBox } from 'element-plus'
+import { ToolbarNames, Footers } from 'md-editor-v3'
+import { dateFormat } from 'src/utils/date'
 
-import {
-  getNotes,
-  getNote,
-  delNote,
-  saveNote,
-  updateNote,
-} from "src/api/notebook"
-import storage from "src/utils/storage"
+import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
+import storage from 'src/utils/storage'
 const router = useRouter()
 const store = useStore()
+
+const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
 
 interface noteItem {
   id: string
@@ -31,7 +28,7 @@ const noteList = computed<noteItem[]>(() => {
   if (nsfw) return pData.value.noteList
   else
     return pData.value.noteList.filter((o) => {
-      return o.encryption !== "1"
+      return o.encryption !== '1'
     })
 })
 
@@ -56,35 +53,35 @@ let pData = ref<noteBookData>({
   dialogVisible: false,
   formData: {},
   user: {},
-  text: "",
+  text: '',
   encryptionStatus: 0,
   encryptionFlag: false,
   currentChoose: <noteItem>{},
-  toolbarsExclude: ["github"],
+  toolbarsExclude: ['github'],
 })
 
 onMounted(async () => {
   let user = store.state.user //storage.get("user")
   pData.value.user = user
-  getData()
+  getNoteList()
 })
 
 const nsfw = () => {
   pData.value.nsfwVisible = !pData.value.nsfwVisible
 }
 const back = () => {
-  router.push({ name: "Home" })
+  router.push({ name: 'Home' })
 }
 const cancel = () => {
   pData.value.dialogVisible = false
   pData.value.formData = {
-    name: "",
+    name: '',
     secret: false,
     encryption: false,
   }
 }
 
-const getData = async () => {
+const getNoteList = async () => {
   let params = {
     uid: pData.value.user.id,
   }
@@ -92,30 +89,34 @@ const getData = async () => {
   pData.value.noteList = data
 }
 
+const save = () => {
+  pData.value.formData.name = pData.value.currentChoose.id ? pData.value.currentChoose.title : '未命名'
+  pData.value.dialogVisible = true
+}
+
+interface saveModel {
+  title: string
+  text: string
+  time: string
+  uid: null | string
+  encryption: number | string
+  id: undefined | string | null
+}
 const submitSave = () => {
   let text = pData.value.text
-  text = text.replace(/\n/g, "<br/>") // 解决\n存入数据库中再取出不显示问题
+  text = text.replace(/\n/g, '<br/>') // 解决\n存入数据库中再取出不显示问题
 
-  interface saveModel {
-    title: string,
-    text: string,
-    time: string,
-    uid: null | string,
-    encryption: number |string,
-    id: undefined | string | null
-  }
-
-  let data:saveModel = {
+  let data: saveModel = {
     title: pData.value.formData.name,
     text: pData.value.text,
     time: dateFormat(new Date()),
     uid: null,
     encryption: 0,
-    id: undefined
+    id: undefined,
   }
 
   // 判断是否加密/私密
-  if (pData.value.formData.secret) data.uid = storage.get("user").id
+  if (pData.value.formData.secret) data.uid = storage.get('user').id
   else data.uid = null
   if (pData.value.formData.encryption) data.encryption = 1
   else data.encryption = 0
@@ -123,32 +124,65 @@ const submitSave = () => {
   if (pData.value.currentChoose.id) {
     // 编辑
     data.id = pData.value.currentChoose.id
-    updateNote(data).then((res) => {
-      getData()
-      ElNotification.success({
-        title: "消息",
-        message: "编辑成功",
-      })
-      cancel()
-    })
+    submitEdit(data)
   } else {
     data.id = undefined
     //新增
-    saveNote(data).then((res) => {
-      getData()
-      ElNotification.success({
-        title: "消息",
-        message: "保存成功",
-      })
-      cancel()
-    })
+    subSave(data)
   }
 }
-const save = () => {
-  pData.value.formData.name = pData.value.currentChoose
-    ? pData.value.currentChoose.title
-    : "未命名"
-  pData.value.dialogVisible = true
+
+const submitEdit = async (params: any) => {
+  let { code, data } = await updateNote(params)
+  getNoteList()
+  if (code == 200) {
+    ElNotification.success({
+      title: '消息',
+      message: '编辑成功',
+    })
+  }
+  cancel()
+}
+
+const subSave = async (params: any) => {
+  let { code, data } = await saveNote(params)
+  getNoteList()
+  if (code == 200) {
+    ElNotification.success({
+      title: '消息',
+      message: '保存成功',
+    })
+    pData.value.currentChoose = data
+  }
+  cancel()
+}
+
+const handleDelete = () => {
+  ElMessageBox.confirm(`此操作将永久删除笔记《${pData.value.currentChoose.title}》, 是否继续?`, '删除笔记', {
+    confirmButtonText: '删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      submitDelete()
+    })
+    .catch(() => {})
+}
+
+const submitDelete = async () => {
+  let data = await delNote(pData.value.currentChoose.id)
+  ElNotification.success({
+    title: '消息',
+    message: '删除成功',
+  })
+  pData.value.currentChoose = {
+    id: '',
+    title: '',
+    time: '',
+    encryption: 0,
+  }
+  pData.value.text = ''
+  getNoteList()
 }
 
 const getNoteDetail = async () => {
@@ -158,15 +192,14 @@ const getNoteDetail = async () => {
   if (data.encryption == 1 && pData.value.encryptionStatus == 0) {
     pData.value.encryptionFlag = true
   } else {
-    pData.value.text = data.text.replace(/<br\/>/g, "\n")
+    pData.value.text = data.text.replace(/<br\/>/g, '\n')
     pData.value.formData.encryption = data.encryption == 1
     pData.value.formData.secret = !!data.uid
   }
 }
 
 const chooseItem = (note: noteItem) => {
-  console.log(note)
-  pData.value.text = ""
+  pData.value.text = ''
   pData.value.currentChoose = note
   getNoteDetail()
 }
@@ -182,33 +215,27 @@ const chooseItem = (note: noteItem) => {
             <el-icon :size="18"><ArrowLeft /></el-icon>
             <span>返回</span></span
           >
-          <span class="nsfw" @click="nsfw">
-            <i
-              :class="[
-                pData.nsfwVisible ? 'el-icon-star-on' : 'el-icon-star-off',
-              ]"
-            ></i>
-            <el-icon :size="18">
-              <template v-if="pData.nsfwVisible">
-                <StarFilled />
-              </template>
-              <template v-else>
-                <Star />
-              </template>
-            </el-icon>
-          </span>
+          <div class="icons">
+            <span @click="getNoteList" class="icon-refresh">
+              <el-icon :size="18"><RefreshRight /></el-icon>
+            </span>
+            <span class="nsfw" @click="nsfw">
+              <el-icon :size="18">
+                <template v-if="pData.nsfwVisible">
+                  <StarFilled />
+                </template>
+                <template v-else>
+                  <Star />
+                </template>
+              </el-icon>
+            </span>
+          </div>
         </div>
         <p>笔记</p>
       </div>
       <div class="note-items">
-        <div
-          @click="chooseItem(note)"
-          v-for="note in noteList"
-          :v-id="note.id"
-          :v-title="note.title"
-          class="note-item"
-        >
-          <p class="_title">{{ note.title || "未命名" }}</p>
+        <div @click="chooseItem(note)" v-for="note in noteList" :v-id="note.id" :v-title="note.title" class="note-item">
+          <p class="_title">{{ note.title || '未命名' }}</p>
           <p class="_time">{{ dateFormat(note.time) }}</p>
         </div>
       </div>
@@ -216,20 +243,17 @@ const chooseItem = (note: noteItem) => {
 
     <!-- 编辑区 -->
     <div class="right-editor">
-      <md-editor
-        @onSave="save"
-        :toolbarsExclude="pData.toolbarsExclude"
-        v-model="pData.text"
-      />
+      <md-editor @onSave="save" :footers="footers" :toolbarsExclude="pData.toolbarsExclude" v-model="pData.text">
+        <template #defFooters>
+          <span v-show="pData.currentChoose.id" @click="handleDelete" class="footer-delete">
+            <el-icon :size="14"><Delete /></el-icon>
+          </span>
+        </template>
+      </md-editor>
     </div>
 
     <!-- 弹窗 -->
-    <el-dialog
-      title="保存"
-      width="420px"
-      top="37vh"
-      v-model="pData.dialogVisible"
-    >
+    <el-dialog title="保存" width="420px" top="37vh" v-model="pData.dialogVisible">
       <el-form :model="pData.formData">
         <el-form-item label="输入笔记名称" label-width="140px">
           <el-input v-model="pData.formData.name"></el-input>
@@ -272,118 +296,7 @@ const chooseItem = (note: noteItem) => {
     ></encryption> -->
 
     <!-- 右键菜单 -->
-    <!-- <v-contextmenu @contextmenu="handleContextmenuShow" ref="contextmenu">
-      <v-contextmenu-item @click="handleDel">删除</v-contextmenu-item>
-    </v-contextmenu> -->
   </div>
 </template>
 
-<style lang="scss" scoped>
-@mixin scrollBar {
-  &::-webkit-scrollbar-track-piece {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 20px;
-  }
-}
-.notebook {
-  color: #2c3e50;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  padding: 5px;
-  .left-list {
-    .left-top {
-      height: 65px;
-      box-sizing: border-box;
-      padding: 10px;
-      .tp-btn {
-        display: flex;
-        justify-content: space-between;
-      }
-      .back {
-        display: flex;
-        vertical-align: middle;
-        font-size: 14px;
-        cursor: pointer;
-        span {
-          padding: 2px;
-        }
-      }
-      .nsfw {
-        font-size: 18px;
-        cursor: pointer;
-      }
-      p {
-        margin: 0;
-        text-align: center;
-        font-size: 18px;
-      }
-    }
-    .note-items {
-      @include scrollBar();
-      overflow-y: scroll;
-      height: calc(100% - 65px);
-      flex: 1;
-      .note-item {
-        height: 50px;
-        box-sizing: border-box;
-        padding: 10px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-
-        &:hover {
-          transition: all ease 0.4s;
-          background: whitesmoke;
-        }
-        p {
-          margin: 0;
-        }
-        ._title {
-          font-size: 14px;
-          margin-bottom: 5px;
-        }
-        ._time {
-          font-size: 12px;
-          text-align: right;
-        }
-      }
-    }
-    width: 230px;
-    min-width: 230px;
-    height: 100%;
-    margin-right: 10px;
-    border-radius: 5px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;
-    background-color: #fff;
-  }
-  .right-editor {
-    flex: 1;
-    #md-editor-v3 {
-      height: 100%;
-    }
-  }
-}
-.none {
-  display: none;
-}
-
-//
-
-.dialog-footer {
-  text-align: right;
-}
-
-.question {
-  position: relative;
-  left: 6px;
-  color: #c1c1c1;
-}
-</style>
+<style lang="scss" scoped></style>

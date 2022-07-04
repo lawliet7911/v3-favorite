@@ -17,7 +17,7 @@ let loginObj = ref({
   remember: false,
   logoutAnimation: false,
   logout: false,
-  exp: '15',
+  exp: 15,
 })
 
 onMounted(() => {
@@ -63,7 +63,7 @@ const login = (formEl: FormInstance): void => {
       let d = data[0]
       delete d.pwd
       store.commit('SET_USER', d)
-      if (loginObj.value.remember) storage.set('user', d, parseInt(loginObj.value.exp))
+      if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp)
       else storage.set('user', d)
       loginObj.value.animation = true
       // 动画完成跳转
