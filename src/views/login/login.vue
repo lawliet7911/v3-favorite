@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import './login.scss'
 import { onMounted, reactive, ref } from 'vue'
 import { ElForm, ElFormItem, FormInstance, FormRules, ElInput, ElCheckbox, ElSelect, ElOption } from 'element-plus'
 import { checkPwd } from 'src/api/user'
@@ -36,10 +35,10 @@ onMounted(() => {
 
 const loginForm: any = ref<FormInstance>()
 
-let rules = reactive<FormRules>({
+let rules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-})
+}
 
 interface loginModel {
   username: string
@@ -63,7 +62,7 @@ const login = (formEl: FormInstance): void => {
       let d = data[0]
       delete d.pwd
       store.commit('SET_USER', d)
-      if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp)
+      if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp * 24)
       else storage.set('user', d)
       loginObj.value.animation = true
       // 动画完成跳转
@@ -106,4 +105,6 @@ const login = (formEl: FormInstance): void => {
   </div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss" scoped>
+@import './login.scss';
+</style>

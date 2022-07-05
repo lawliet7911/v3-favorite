@@ -3,13 +3,13 @@ import { ref, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import MdEditor from 'md-editor-v3'
-import './notebookEdit.scss'
 import 'md-editor-v3/lib/style.css'
 import { ElNotification, ElMessageBox } from 'element-plus'
 import { ToolbarNames, Footers } from 'md-editor-v3'
 import { dateFormat } from 'src/utils/date'
 
 import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
+import { upload } from 'src/api/common'
 import storage from 'src/utils/storage'
 const router = useRouter()
 const store = useStore()
@@ -203,6 +203,23 @@ const chooseItem = (note: noteItem) => {
   pData.value.currentChoose = note
   getNoteDetail()
 }
+
+const onUploadImg = async (files: Array<File>, callback) => {
+  const res = await Promise.all(
+    files.map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData()
+        form.append('smfile', file)
+
+        upload(form)
+          .then((res) => rev(res))
+          .catch((error) => rej(error))
+      })
+    })
+  )
+
+  callback(res.map((item) => item.data.url))
+}
 </script>
 
 <template>
@@ -243,7 +260,13 @@ const chooseItem = (note: noteItem) => {
 
     <!-- 编辑区 -->
     <div class="right-editor">
-      <md-editor @onSave="save" :footers="footers" :toolbarsExclude="pData.toolbarsExclude" v-model="pData.text">
+      <md-editor
+        @onSave="save"
+        :footers="footers"
+        @onUploadImg="onUploadImg"
+        :toolbarsExclude="pData.toolbarsExclude"
+        v-model="pData.text"
+      >
         <template #defFooters>
           <span v-show="pData.currentChoose.id" @click="handleDelete" class="footer-delete">
             <el-icon :size="14"><Delete /></el-icon>
@@ -299,4 +322,6 @@ const chooseItem = (note: noteItem) => {
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+@import './notebookEdit.scss';
+</style>
