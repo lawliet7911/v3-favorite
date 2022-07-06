@@ -9,7 +9,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 // element-icons
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
+import Encryption from './components/Encryption'
 // common.css
 import 'src/assets/css/common.css'
 
@@ -18,4 +18,4 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(router).use(store).use(ElementPlus).mount('#app')
+app.use(router).use(store).use(Encryption).use(ElementPlus).mount('#app')

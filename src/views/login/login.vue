@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
-import { ElForm, ElFormItem, FormInstance, FormRules, ElInput, ElCheckbox, ElSelect, ElOption } from 'element-plus'
+import { FormInstance, FormRules } from 'element-plus'
 import { checkPwd } from 'src/api/user'
 import storage from 'src/utils/storage'
 

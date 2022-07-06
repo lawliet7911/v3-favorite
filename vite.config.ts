@@ -17,8 +17,8 @@ export default defineConfig({
     cors: true,
     proxy: {
       '^.api': {
-        // target: 'http://192.168.0.106:5656',
-        target: 'http://192.168.22.122:5656',
+        target: 'http://192.168.0.107:5656',
+        // target: 'http://192.168.22.122:5656',
         ws: true,
         secure: false,
       },

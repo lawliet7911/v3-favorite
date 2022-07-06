@@ -1,258 +1,7 @@
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import MdEditor from 'md-editor-v3'
-import 'md-editor-v3/lib/style.css'
-import { ElNotification, ElMessageBox } from 'element-plus'
-import { ToolbarNames, Footers } from 'md-editor-v3'
-import { dateFormat } from 'src/utils/date'
-
-import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
-import { upload } from 'src/api/common'
-import storage from 'src/utils/storage'
-const router = useRouter()
-const store = useStore()
-
-const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
-
-interface noteItem {
-  id: string
-  title: string
-  time: string
-  encryption: string | number
-  delVisible: boolean
-}
-
-const noteList = computed<noteItem[]>(() => {
-  let nsfw = _data.value.nsfwVisible
-  if (nsfw) return _data.value.noteList
-  else
-    return _data.value.noteList.filter((o) => {
-      return o.encryption !== '1'
-    })
-})
-
-interface noteBookData {
-  nsfwVisible: boolean
-  noteListF: noteItem[]
-  noteList: noteItem[]
-  dialogVisible: boolean
-  formData: any
-  user: any
-  text: string // 转换md值
-  currentChoose: noteItem
-  encryptionStatus: number
-  encryptionFlag: boolean
-  toolbarsExclude: ToolbarNames[]
-}
-
-let _data = ref<noteBookData>({
-  noteListF: [],
-  noteList: [],
-  nsfwVisible: false,
-  dialogVisible: false,
-  formData: {},
-  user: {},
-  text: '',
-  encryptionStatus: 0,
-  encryptionFlag: false,
-  currentChoose: <noteItem>{},
-  toolbarsExclude: ['github'],
-})
-
-onMounted(async () => {
-  let user = store.state.user //storage.get("user")
-  _data.value.user = user
-  getNoteList()
-})
-
-const nsfw = () => {
-  _data.value.nsfwVisible = !_data.value.nsfwVisible
-}
-const back = () => {
-  router.push({ name: 'Home' })
-}
-const cancel = () => {
-  _data.value.dialogVisible = false
-  _data.value.formData = {
-    name: '',
-    secret: false,
-    encryption: false,
-  }
-}
-
-const getNoteList = async () => {
-  let params = {
-    uid: _data.value.user.id,
-  }
-  let { data } = await getNotes(params)
-  _data.value.noteList = data
-}
-
-const save = () => {
-  _data.value.formData.name = _data.value.currentChoose.id ? _data.value.currentChoose.title : '未命名'
-  _data.value.dialogVisible = true
-}
-
-interface saveModel {
-  title: string
-  text: string
-  time: string
-  uid: null | string
-  encryption: number | string
-  id: undefined | string | null
-}
-const submitSave = () => {
-  let text = _data.value.text
-  text = text.replace(/\n/g, '<br/>') // 解决\n存入数据库中再取出不显示问题
-
-  let data: saveModel = {
-    title: _data.value.formData.name,
-    text: _data.value.text,
-    time: dateFormat(new Date()),
-    uid: null,
-    encryption: 0,
-    id: undefined,
-  }
-
-  // 判断是否加密/私密
-  if (_data.value.formData.secret) data.uid = storage.get('user').id
-  else data.uid = null
-  if (_data.value.formData.encryption) data.encryption = 1
-  else data.encryption = 0
-
-  if (_data.value.currentChoose.id) {
-    // 编辑
-    data.id = _data.value.currentChoose.id
-    submitEdit(data)
-  } else {
-    data.id = undefined
-    //新增
-    subSave(data)
-  }
-}
-
-const submitEdit = async (params: any) => {
-  let { code, data } = await updateNote(params)
-  getNoteList()
-  if (code == 200) {
-    ElNotification.success({
-      title: '消息',
-      message: '编辑成功',
-    })
-  }
-  cancel()
-}
-
-const subSave = async (params: any) => {
-  let { code, data } = await saveNote(params)
-  getNoteList()
-  if (code == 200) {
-    ElNotification.success({
-      title: '消息',
-      message: '保存成功',
-    })
-    _data.value.currentChoose = data
-  }
-  cancel()
-}
-
-const handleDelete = () => {
-  ElMessageBox.confirm(`此操作将永久删除笔记《${_data.value.currentChoose.title}》, 是否继续?`, '删除笔记', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(() => {
-      submitDelete(null)
-    })
-    .catch(() => {})
-}
-
-const submitDelete = async (id: string | undefined | null) => {
-  let did: string = id ? id : _data.value.currentChoose.id
-  let data = await delNote(did)
-  ElNotification.success({
-    title: '消息',
-    message: '删除成功',
-  })
-  if (id) {
-    getNoteList()
-    return
-  }
-  _data.value.currentChoose = {
-    id: '',
-    title: '',
-    time: '',
-    encryption: 0,
-    delVisible: false,
-  }
-  _data.value.text = ''
-  getNoteList()
-}
-
-const getNoteDetail = async () => {
-  if (!_data.value.currentChoose) return
-
-  let { data } = await getNote(_data.value.currentChoose.id)
-  if (data.encryption == 1 && _data.value.encryptionStatus == 0) {
-    _data.value.encryptionFlag = true
-  } else {
-    _data.value.text = data.text.replace(/<br\/>/g, '\n')
-    _data.value.formData.encryption = data.encryption == 1
-    _data.value.formData.secret = !!data.uid
-  }
-}
-
-const chooseItem = (note: noteItem) => {
-  _data.value.text = ''
-  _data.value.currentChoose = note
-  getNoteDetail()
-}
-
-const onUploadImg = async (files: Array<File>, callback) => {
-  const res = await Promise.all(
-    files.map((file) => {
-      return new Promise((rev, rej) => {
-        const form = new FormData()
-        form.append('file', file)
-
-        upload(form)
-          .then((res) => rev(res))
-          .catch((error) => rej(error))
-      })
-    })
-  )
-  console.log(res)
-  callback(res.map((item) => item.data.url))
-}
-
-const itemEnter = (note: noteItem) => {
-  note.delVisible = true
-}
-
-const itemLeave = (note: noteItem) => {
-  note.delVisible = false
-}
-
-const itemDel = (note: noteItem) => {
-  ElMessageBox.confirm(`此操作将永久删除笔记《${note.title}》, 是否继续?`, '删除笔记', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(() => {
-      submitDelete(note.id)
-    })
-    .catch(() => {})
-}
-</script>
-
 <template>
   <div class="notebook">
     <!-- 列表区 -->
-    <div class="left-list">
+    <div class="left-list" v-loading="_data.listLoading">
       <div class="left-top">
         <div class="tp-btn">
           <span class="back" @click="back">
@@ -260,8 +9,11 @@ const itemDel = (note: noteItem) => {
             <span>返回</span></span
           >
           <div class="icons">
-            <span @click="getNoteList" class="icon-refresh">
+            <span @click="getNoteList" title="刷新列表" class="icon-refresh">
               <el-icon :size="18"><RefreshRight /></el-icon>
+            </span>
+            <span @click="newNote" title="新建文档" class="icon-refresh">
+              <el-icon :size="18"><DocumentAdd /></el-icon>
             </span>
             <span class="nsfw" @click="nsfw">
               <el-icon :size="18">
@@ -295,7 +47,7 @@ const itemDel = (note: noteItem) => {
     </div>
 
     <!-- 编辑区 -->
-    <div class="right-editor">
+    <div class="right-editor" v-loading="_data.editLoading">
       <md-editor
         @onSave="save"
         :footers="footers"
@@ -347,16 +99,294 @@ const itemDel = (note: noteItem) => {
     </el-dialog>
 
     <!-- 验证独立密码 -->
-    <!-- <encryption
-      v-if="encryptionFlag"
+    <encryption
+      v-if="_data.encryptionFlag"
       @close="closeEncryption"
-      :visible="encryptionFlag"
+      :visible="_data.encryptionFlag"
       @validSuccess="validSuccess"
-    ></encryption> -->
+    ></encryption>
 
     <!-- 右键菜单 -->
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import MdEditor from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import { ElNotification, ElMessageBox } from 'element-plus'
+import { ToolbarNames, Footers } from 'md-editor-v3'
+import { dateFormat } from 'src/utils/date'
+
+import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
+import { upload } from 'src/api/common'
+import storage from 'src/utils/storage'
+const router = useRouter()
+const store = useStore()
+
+const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
+
+interface noteItem {
+  id: string
+  title: string
+  time: string
+  encryption: string | number
+  delVisible: boolean
+}
+
+const noteList = computed<noteItem[]>(() => {
+  let nsfw = _data.value.nsfwVisible
+  if (nsfw) return _data.value.noteList
+  else
+    return _data.value.noteList.filter((o) => {
+      return o.encryption !== '1'
+    })
+})
+
+interface noteBookData {
+  nsfwVisible: boolean
+  noteListF: noteItem[]
+  noteList: noteItem[]
+  dialogVisible: boolean
+  editLoading: boolean
+  listLoading: boolean
+  formData: any
+  user: any
+  text: string // 转换md值
+  currentChoose: noteItem
+  encryptionStatus: number
+  encryptionFlag: boolean
+  toolbarsExclude: ToolbarNames[]
+}
+
+let _data = ref<noteBookData>({
+  noteListF: [],
+  noteList: [],
+  nsfwVisible: false,
+  dialogVisible: false,
+  editLoading: false,
+  listLoading: false,
+  formData: {},
+  user: {},
+  text: '',
+  encryptionStatus: 0,
+  encryptionFlag: false,
+  currentChoose: <noteItem>{},
+  toolbarsExclude: ['github'],
+})
+
+onMounted(async () => {
+  let user = store.state.user //storage.get("user")
+  _data.value.user = user
+  getNoteList()
+})
+
+const nsfw = () => {
+  _data.value.nsfwVisible = !_data.value.nsfwVisible
+}
+const back = () => {
+  router.push({ name: 'Home' })
+}
+const cancel = () => {
+  _data.value.dialogVisible = false
+  _data.value.formData = {
+    name: '',
+    secret: false,
+    encryption: false,
+  }
+}
+
+const getNoteList = async () => {
+  _data.value.listLoading = true
+  let params = {
+    uid: _data.value.user.id,
+  }
+  let { data } = await getNotes(params)
+  _data.value.listLoading = false
+  _data.value.noteList = data
+}
+
+const save = () => {
+  _data.value.formData.name = _data.value.currentChoose.id ? _data.value.currentChoose.title : '未命名'
+  _data.value.dialogVisible = true
+}
+
+interface saveModel {
+  title: string
+  text: string
+  time: string
+  uid: null | string
+  encryption: number | string
+  id: undefined | string | null
+}
+const submitSave = () => {
+  let text = _data.value.text
+  text = text.replace(/\n/g, '<br/>') // 解决\n存入数据库中再取出不显示问题
+
+  let data: saveModel = {
+    title: _data.value.formData.name,
+    text: _data.value.text,
+    time: dateFormat(new Date()),
+    uid: null,
+    encryption: 0,
+    id: undefined,
+  }
+
+  // 判断是否加密/私密
+  if (_data.value.formData.secret) data.uid = storage.get('user').id
+  else data.uid = null
+  if (_data.value.formData.encryption) data.encryption = 1
+  else data.encryption = 0
+
+  if (_data.value.currentChoose.id) {
+    // 编辑
+    data.id = _data.value.currentChoose.id
+    submitEdit(data)
+  } else {
+    data.id = undefined
+    //新增
+    subSave(data)
+  }
+}
+
+const submitEdit = async (params: any) => {
+  let res: any = await updateNote(params)
+  getNoteList()
+  if (res.code == 200) {
+    ElNotification.success({
+      title: '消息',
+      message: '编辑成功',
+    })
+  }
+  cancel()
+}
+
+const subSave = async (params: any) => {
+  let res: any = await saveNote(params)
+  getNoteList()
+  if (res.code == 200) {
+    ElNotification.success({
+      title: '消息',
+      message: '保存成功',
+    })
+    _data.value.currentChoose = res.data
+  }
+  cancel()
+}
+
+const handleDelete = () => {
+  ElMessageBox.confirm(`此操作将永久删除笔记《${_data.value.currentChoose.title}》, 是否继续?`, '删除笔记', {
+    confirmButtonText: '删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      submitDelete()
+    })
+    .catch(() => {})
+}
+
+const submitDelete = async (id?: string) => {
+  let did: string = id ? id : _data.value.currentChoose.id
+  let data = await delNote(did)
+  ElNotification.success({
+    title: '消息',
+    message: '删除成功',
+  })
+  if (id == _data.value.currentChoose.id || !_data.value.currentChoose.id) {
+    _data.value.currentChoose = {
+      id: '',
+      title: '',
+      time: '',
+      encryption: 0,
+      delVisible: false,
+    }
+    _data.value.text = ''
+  }
+  getNoteList()
+}
+
+const chooseItem = (note: noteItem) => {
+  _data.value.loading = true
+
+  _data.value.text = ''
+  _data.value.currentChoose = note
+  getNoteDetail()
+}
+
+const onUploadImg = async (files: Array<File>, callback: Function | any) => {
+  const res = await Promise.all(
+    files.map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData()
+        form.append('file', file)
+
+        upload(form)
+          .then((res) => rev(res))
+          .catch((error) => rej(error))
+      })
+    })
+  )
+  callback(res.map((item: any) => item.data.url))
+}
+
+const itemEnter = (note: noteItem) => {
+  note.delVisible = true
+}
+
+const itemLeave = (note: noteItem) => {
+  note.delVisible = false
+}
+
+const itemDel = (note: noteItem) => {
+  ElMessageBox.confirm(`此操作将永久删除笔记《${note.title}》, 是否继续?`, '删除笔记', {
+    confirmButtonText: '删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      submitDelete(note.id)
+    })
+    .catch(() => {})
+}
+
+const newNote = (): void => {
+  _data.value.currentChoose = {
+    id: '',
+    title: '',
+    time: '',
+    encryption: 0,
+    delVisible: false,
+  }
+  _data.value.text = ''
+}
+
+const closeEncryption = (): void => {
+  _data.value.encryptionFlag = false
+}
+
+const validSuccess = (): void => {
+  _data.value.encryptionStatus = 1
+  getNoteDetail()
+}
+
+const getNoteDetail = async () => {
+  if (!_data.value.currentChoose) return
+
+  let { data } = await getNote(_data.value.currentChoose.id)
+  _data.value.loading = false
+
+  if (data.encryption == 1 && _data.value.encryptionStatus == 0) {
+    _data.value.encryptionFlag = true
+  } else {
+    _data.value.text = data.text.replace(/<br\/>/g, '\n')
+    _data.value.formData.encryption = data.encryption == 1
+    _data.value.formData.secret = !!data.uid
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @import './notebookEdit.scss';

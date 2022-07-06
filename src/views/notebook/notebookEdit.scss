@@ -12,37 +12,45 @@
     border-radius: 20px;
   }
 }
+
 .notebook {
   color: #2c3e50;
   height: 100%;
   box-sizing: border-box;
   display: flex;
   padding: 5px;
+
   .left-list {
     .left-top {
       height: 65px;
       box-sizing: border-box;
       padding: 10px;
+
       .tp-btn {
         display: flex;
         justify-content: space-between;
       }
+
       .back {
         display: flex;
         vertical-align: middle;
         font-size: 14px;
         cursor: pointer;
+
         span {
           padding: 2px;
         }
       }
+
       .icon-refresh {
         cursor: pointer;
         margin-right: 10px;
       }
+
       .nsfw {
         cursor: pointer;
       }
+
       p {
         margin: 0;
         text-align: center;
@@ -73,19 +81,23 @@
           transition: all ease 0.4s;
           background: whitesmoke;
         }
+
         p {
           margin: 0;
         }
+
         ._title {
           font-size: 14px;
           margin-bottom: 5px;
         }
+
         ._time {
           font-size: 12px;
           text-align: right;
         }
       }
     }
+
     width: 230px;
     min-width: 230px;
     height: 100%;
@@ -94,13 +106,16 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 12px 0px;
     background-color: #fff;
   }
+
   .right-editor {
     flex: 1;
+
     #md-editor-v3 {
       height: 100%;
     }
   }
 }
+
 .none {
   display: none;
 }
@@ -121,7 +136,8 @@
   padding: 3px;
   position: relative;
   top: 2px;
-  &:hover{
+
+  &:hover {
     background: rgba(0, 0, 0, 0.1);
     cursor: pointer;
   }
