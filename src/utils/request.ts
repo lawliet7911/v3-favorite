@@ -26,7 +26,7 @@ axios.interceptors.response.use(
   (response) => {
     const res = response.data
     // 当状态值不为200判断为错误
-    if (res.code !== 200) {
+    if (res.code !== 200 && res.code !== 'success') {
       if (res.code === 401) {
         ElMessage({
           type: 'error',

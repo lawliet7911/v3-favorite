@@ -209,7 +209,7 @@ const onUploadImg = async (files: Array<File>, callback) => {
     files.map((file) => {
       return new Promise((rev, rej) => {
         const form = new FormData()
-        form.append('smfile', file)
+        form.append('file', file)
 
         upload(form)
           .then((res) => rev(res))
@@ -217,7 +217,7 @@ const onUploadImg = async (files: Array<File>, callback) => {
       })
     })
   )
-
+  console.log(res);
   callback(res.map((item) => item.data.url))
 }
 </script>
