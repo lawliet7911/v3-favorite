@@ -78,6 +78,14 @@
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
+  position: relative;
+}
+
+.notebook .left-list .note-items .note-item .note-delete {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  cursor: pointer;
 }
 
 .notebook .left-list .note-items .note-item:hover {

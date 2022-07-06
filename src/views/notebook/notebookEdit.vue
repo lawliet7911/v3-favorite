@@ -21,13 +21,14 @@ interface noteItem {
   title: string
   time: string
   encryption: string | number
+  delVisible: boolean
 }
 
 const noteList = computed<noteItem[]>(() => {
-  let nsfw = pData.value.nsfwVisible
-  if (nsfw) return pData.value.noteList
+  let nsfw = _data.value.nsfwVisible
+  if (nsfw) return _data.value.noteList
   else
-    return pData.value.noteList.filter((o) => {
+    return _data.value.noteList.filter((o) => {
       return o.encryption !== '1'
     })
 })
@@ -46,7 +47,7 @@ interface noteBookData {
   toolbarsExclude: ToolbarNames[]
 }
 
-let pData = ref<noteBookData>({
+let _data = ref<noteBookData>({
   noteListF: [],
   noteList: [],
   nsfwVisible: false,
@@ -62,19 +63,19 @@ let pData = ref<noteBookData>({
 
 onMounted(async () => {
   let user = store.state.user //storage.get("user")
-  pData.value.user = user
+  _data.value.user = user
   getNoteList()
 })
 
 const nsfw = () => {
-  pData.value.nsfwVisible = !pData.value.nsfwVisible
+  _data.value.nsfwVisible = !_data.value.nsfwVisible
 }
 const back = () => {
   router.push({ name: 'Home' })
 }
 const cancel = () => {
-  pData.value.dialogVisible = false
-  pData.value.formData = {
+  _data.value.dialogVisible = false
+  _data.value.formData = {
     name: '',
     secret: false,
     encryption: false,
@@ -83,15 +84,15 @@ const cancel = () => {
 
 const getNoteList = async () => {
   let params = {
-    uid: pData.value.user.id,
+    uid: _data.value.user.id,
   }
   let { data } = await getNotes(params)
-  pData.value.noteList = data
+  _data.value.noteList = data
 }
 
 const save = () => {
-  pData.value.formData.name = pData.value.currentChoose.id ? pData.value.currentChoose.title : '未命名'
-  pData.value.dialogVisible = true
+  _data.value.formData.name = _data.value.currentChoose.id ? _data.value.currentChoose.title : '未命名'
+  _data.value.dialogVisible = true
 }
 
 interface saveModel {
@@ -103,12 +104,12 @@ interface saveModel {
   id: undefined | string | null
 }
 const submitSave = () => {
-  let text = pData.value.text
+  let text = _data.value.text
   text = text.replace(/\n/g, '<br/>') // 解决\n存入数据库中再取出不显示问题
 
   let data: saveModel = {
-    title: pData.value.formData.name,
-    text: pData.value.text,
+    title: _data.value.formData.name,
+    text: _data.value.text,
     time: dateFormat(new Date()),
     uid: null,
     encryption: 0,
@@ -116,14 +117,14 @@ const submitSave = () => {
   }
 
   // 判断是否加密/私密
-  if (pData.value.formData.secret) data.uid = storage.get('user').id
+  if (_data.value.formData.secret) data.uid = storage.get('user').id
   else data.uid = null
-  if (pData.value.formData.encryption) data.encryption = 1
+  if (_data.value.formData.encryption) data.encryption = 1
   else data.encryption = 0
 
-  if (pData.value.currentChoose.id) {
+  if (_data.value.currentChoose.id) {
     // 编辑
-    data.id = pData.value.currentChoose.id
+    data.id = _data.value.currentChoose.id
     submitEdit(data)
   } else {
     data.id = undefined
@@ -152,55 +153,61 @@ const subSave = async (params: any) => {
       title: '消息',
       message: '保存成功',
     })
-    pData.value.currentChoose = data
+    _data.value.currentChoose = data
   }
   cancel()
 }
 
 const handleDelete = () => {
-  ElMessageBox.confirm(`此操作将永久删除笔记《${pData.value.currentChoose.title}》, 是否继续?`, '删除笔记', {
+  ElMessageBox.confirm(`此操作将永久删除笔记《${_data.value.currentChoose.title}》, 是否继续?`, '删除笔记', {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
     type: 'warning',
   })
     .then(() => {
-      submitDelete()
+      submitDelete(null)
     })
     .catch(() => {})
 }
 
-const submitDelete = async () => {
-  let data = await delNote(pData.value.currentChoose.id)
+const submitDelete = async (id: string | undefined | null) => {
+  let did: string = id ? id : _data.value.currentChoose.id
+  let data = await delNote(did)
   ElNotification.success({
     title: '消息',
     message: '删除成功',
   })
-  pData.value.currentChoose = {
+  if (id) {
+    getNoteList()
+    return
+  }
+  _data.value.currentChoose = {
     id: '',
     title: '',
     time: '',
     encryption: 0,
+    delVisible: false,
   }
-  pData.value.text = ''
+  _data.value.text = ''
   getNoteList()
 }
 
 const getNoteDetail = async () => {
-  if (!pData.value.currentChoose) return
+  if (!_data.value.currentChoose) return
 
-  let { data } = await getNote(pData.value.currentChoose.id)
-  if (data.encryption == 1 && pData.value.encryptionStatus == 0) {
-    pData.value.encryptionFlag = true
+  let { data } = await getNote(_data.value.currentChoose.id)
+  if (data.encryption == 1 && _data.value.encryptionStatus == 0) {
+    _data.value.encryptionFlag = true
   } else {
-    pData.value.text = data.text.replace(/<br\/>/g, '\n')
-    pData.value.formData.encryption = data.encryption == 1
-    pData.value.formData.secret = !!data.uid
+    _data.value.text = data.text.replace(/<br\/>/g, '\n')
+    _data.value.formData.encryption = data.encryption == 1
+    _data.value.formData.secret = !!data.uid
   }
 }
 
 const chooseItem = (note: noteItem) => {
-  pData.value.text = ''
-  pData.value.currentChoose = note
+  _data.value.text = ''
+  _data.value.currentChoose = note
   getNoteDetail()
 }
 
@@ -217,8 +224,28 @@ const onUploadImg = async (files: Array<File>, callback) => {
       })
     })
   )
-  console.log(res);
+  console.log(res)
   callback(res.map((item) => item.data.url))
+}
+
+const itemEnter = (note: noteItem) => {
+  note.delVisible = true
+}
+
+const itemLeave = (note: noteItem) => {
+  note.delVisible = false
+}
+
+const itemDel = (note: noteItem) => {
+  ElMessageBox.confirm(`此操作将永久删除笔记《${note.title}》, 是否继续?`, '删除笔记', {
+    confirmButtonText: '删除',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      submitDelete(note.id)
+    })
+    .catch(() => {})
 }
 </script>
 
@@ -238,7 +265,7 @@ const onUploadImg = async (files: Array<File>, callback) => {
             </span>
             <span class="nsfw" @click="nsfw">
               <el-icon :size="18">
-                <template v-if="pData.nsfwVisible">
+                <template v-if="_data.nsfwVisible">
                   <StarFilled />
                 </template>
                 <template v-else>
@@ -251,7 +278,16 @@ const onUploadImg = async (files: Array<File>, callback) => {
         <p>笔记</p>
       </div>
       <div class="note-items">
-        <div @click="chooseItem(note)" v-for="note in noteList" :v-id="note.id" :v-title="note.title" class="note-item">
+        <div
+          @mouseenter="itemEnter(note)"
+          @mouseleave="itemLeave(note)"
+          @click="chooseItem(note)"
+          v-for="note in noteList"
+          :v-id="note.id"
+          :v-title="note.title"
+          class="note-item"
+        >
+          <el-icon @click.stop="itemDel(note)" v-if="note.delVisible" class="note-delete" :size="14"><Close /></el-icon>
           <p class="_title">{{ note.title || '未命名' }}</p>
           <p class="_time">{{ dateFormat(note.time) }}</p>
         </div>
@@ -264,11 +300,11 @@ const onUploadImg = async (files: Array<File>, callback) => {
         @onSave="save"
         :footers="footers"
         @onUploadImg="onUploadImg"
-        :toolbarsExclude="pData.toolbarsExclude"
-        v-model="pData.text"
+        :toolbarsExclude="_data.toolbarsExclude"
+        v-model="_data.text"
       >
         <template #defFooters>
-          <span v-show="pData.currentChoose.id" @click="handleDelete" class="footer-delete">
+          <span v-show="_data.currentChoose.id" @click="handleDelete" class="footer-delete">
             <el-icon :size="14"><Delete /></el-icon>
           </span>
         </template>
@@ -276,13 +312,13 @@ const onUploadImg = async (files: Array<File>, callback) => {
     </div>
 
     <!-- 弹窗 -->
-    <el-dialog title="保存" width="420px" top="37vh" v-model="pData.dialogVisible">
-      <el-form :model="pData.formData">
+    <el-dialog title="保存" width="420px" top="37vh" v-model="_data.dialogVisible">
+      <el-form :model="_data.formData">
         <el-form-item label="输入笔记名称" label-width="140px">
-          <el-input v-model="pData.formData.name"></el-input>
+          <el-input v-model="_data.formData.name"></el-input>
         </el-form-item>
-        <el-form-item v-if="pData.user.id" label="私密保存" label-width="140px">
-          <el-switch v-model="pData.formData.secret"></el-switch>
+        <el-form-item v-if="_data.user.id" label="私密保存" label-width="140px">
+          <el-switch v-model="_data.formData.secret"></el-switch>
           <el-tooltip
             class="item"
             effect="dark"
@@ -292,8 +328,8 @@ const onUploadImg = async (files: Array<File>, callback) => {
             <el-icon :size="18"><QuestionFilled class="question" /></el-icon>
           </el-tooltip>
         </el-form-item>
-        <el-form-item v-if="pData.user.id" label="加密保存" label-width="140px">
-          <el-switch v-model="pData.formData.encryption"></el-switch>
+        <el-form-item v-if="_data.user.id" label="加密保存" label-width="140px">
+          <el-switch v-model="_data.formData.encryption"></el-switch>
           <el-tooltip
             class="item"
             effect="dark"
