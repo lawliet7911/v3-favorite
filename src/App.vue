@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { log } from 'console'
-import { RouterView } from 'vue-router'
 import { useStore } from 'vuex'
 import storage from './utils/storage'
 let store = useStore()
@@ -16,6 +14,7 @@ if (user_expTime < new Date().getTime()) {
 
 <template>
   <router-view />
+  <my-avatar/>
 </template>
 
 <style>

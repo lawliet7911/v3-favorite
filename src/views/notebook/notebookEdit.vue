@@ -309,8 +309,6 @@ const submitDelete = async (id?: string) => {
 }
 
 const chooseItem = (note: noteItem) => {
-  _data.value.loading = true
-
   _data.value.text = ''
   _data.value.currentChoose = note
   getNoteDetail()
@@ -374,9 +372,10 @@ const validSuccess = (): void => {
 
 const getNoteDetail = async () => {
   if (!_data.value.currentChoose) return
-
+  
+  _data.value.editLoading = true
   let { data } = await getNote(_data.value.currentChoose.id)
-  _data.value.loading = false
+  _data.value.editLoading = false
 
   if (data.encryption == 1 && _data.value.encryptionStatus == 0) {
     _data.value.encryptionFlag = true

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineEmits,defineProps } from 'vue'
+import { ref, reactive } from 'vue'
 import type { FormRules, FormInstance } from 'element-plus'
 import { useStore } from 'vuex'
 import { checkEncryption } from 'src/api/user'

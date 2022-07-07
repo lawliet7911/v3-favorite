@@ -32,7 +32,20 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("src/views/notebook/notebook.vue"),
       },
     ]
-  }
+  },
+  {
+    // markdown笔记
+    path: "/bill",
+    name: "Bill",
+    component: BasicLayout,
+    children: [
+      {
+        path: "watch",
+        name: "MyBill",
+        component: () => import("src/views/Bill/bill.vue"),
+      },
+    ],
+  },
 
 ]
 

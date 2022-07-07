@@ -1,0 +1,104 @@
+.span-l {
+  margin-left: 15px;
+}
+
+.r-input {
+  width: 230px;
+}
+
+.bill-main {
+  .header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    background-color: #fff;
+  }
+
+  .summary {
+    display: flex;
+    padding: 0 20px;
+    margin: 20px 0;
+
+    div {
+      flex: 1;
+      border-radius: 8px;
+      height: 100px;
+      margin-right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      &.budget {
+        background-color: #67c23a;
+      }
+
+      &.cost {
+        background-color: #409eff;
+      }
+
+      &.per {
+        background-color: #e6a23c;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      span {
+        color: #fff;
+      }
+
+      .s-title {
+        font-size: 20px;
+        margin-bottom: 5px;
+      }
+
+      .s-num {
+        font-size: 28px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .accordion {
+    background-color: #fff;
+    padding: 0 20px;
+    margin-bottom: 20px;
+
+    .item {
+      display: inline-block;
+      width: 33%;
+
+      .name {
+        &::after {
+          content: "：";
+        }
+      }
+    }
+  }
+
+  .fn-btns {
+    padding: 20px;
+    background-color: #fff;
+  }
+
+  .chart-content {
+    background-color: #fff;
+
+    .groups {
+      margin: 20px;
+    }
+  }
+
+  .chart {
+    padding: 20px;
+    background-color: #fff;
+
+    #chart {
+      width: 100%;
+      height: 400px;
+    }
+  }
+}

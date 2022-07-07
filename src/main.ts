@@ -6,10 +6,12 @@ import store from './store/index'
 
 // UI框架
 import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 // element-icons
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import Encryption from './components/Encryption'
+import MyAvatar from './components/Avatar'
 // common.css
 import 'src/assets/css/common.css'
 
@@ -18,4 +20,4 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(router).use(store).use(Encryption).use(ElementPlus).mount('#app')
+app.use(router).use(store).use(MyAvatar).use(Encryption).use(ElementPlus,{locale:zhCn}).mount('#app')
