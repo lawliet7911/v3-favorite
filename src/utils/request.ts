@@ -3,7 +3,8 @@ import { ElMessage } from 'element-plus'
 import store from '../store/index'
 
 const SERVER_ERROR_TEXT: string = ' 服务器错误，请稍后重试'
-const TIMEOUT_SECOND: number = 30
+const TIMEOUT_SECOND: number = 120
+const TOAST_DURATION: number = 5
 
 const axios = Axios.create({
   // baseURL: process.env.VUE_APP_BASE_API,
@@ -28,7 +29,7 @@ axios.interceptors.response.use(
       if (res.code === 401) {
         ElMessage({
           type: 'error',
-          duration: TIMEOUT_SECOND * 1000,
+          duration: TOAST_DURATION * 1000,
           message: '登录超时',
         })
 
@@ -39,7 +40,7 @@ axios.interceptors.response.use(
 
       ElMessage({
         type: 'error',
-        duration: TIMEOUT_SECOND * 1000,
+        duration: TOAST_DURATION * 1000,
         message: res.message || SERVER_ERROR_TEXT,
       })
 
@@ -51,7 +52,7 @@ axios.interceptors.response.use(
   (error) => {
     ElMessage({
       type: 'error',
-      duration: TIMEOUT_SECOND * 1000,
+      duration: TOAST_DURATION * 1000,
       message: error.message,
     })
     return Promise.reject(error)
