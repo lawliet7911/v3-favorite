@@ -94,7 +94,8 @@ const saveRecord = (formRef: FormInstance) => {
   formRef.validate(async (flag: boolean) => {
     if (!flag) return
     let params = { ...recordForm.value }
-    let { data, code, msg } = await addRecord(params)
+    let res:any = await addRecord(params)
+    let { data, code, msg } = res
     if (code == 200) {
       ElNotification.success({
         title: '消息',

@@ -95,10 +95,12 @@
   .chart {
     padding: 20px;
     background-color: #fff;
+    box-sizing: border-box;
 
     #chart {
       width: 100%;
       height: 400px;
+      box-sizing: border-box;
     }
   }
 }

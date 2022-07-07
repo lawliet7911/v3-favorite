@@ -6,7 +6,7 @@
           <span style="margin-right: 20px">{{ _data.title }}</span>
           <el-date-picker
             v-model="_data.dateStr"
-            value-format="yyyy-MM"
+            value-format="YYYY-MM"
             type="month"
             @change="changeMonth"
             placeholder="选择日期"
@@ -52,8 +52,8 @@
     </el-collapse>
 
     <div class="fn-btns">
-      <el-button @click="showRecordModal" icon="el-icon-plus" size="large" type="primary">记一笔</el-button>
-      <el-button @click="showBudgetModal" icon="el-icon-data-line" size="large" type="primary">设置本月预算</el-button>
+      <el-button @click="showRecordModal" :icon="Plus" size="large" type="primary">记一笔</el-button>
+      <el-button @click="showBudgetModal" :icon="DataLine" size="large" type="primary">设置本月预算</el-button>
     </div>
 
     <div class="chart-content">
@@ -75,10 +75,11 @@
     ></dialog-mark>
 
     <!-- 设置预算 -->
-    <dialog-budget 
-    :visible.sync="budgetDialogVisible"
+    <dialog-budget
+      :visible.sync="budgetDialogVisible"
       @close="budgetDialogClose"
       @success="budgetDialogSuccess"
+      :data="_data"
     ></dialog-budget>
   </div>
 </template>
@@ -86,11 +87,15 @@
 <script setup lang="ts">
 import dialogMark from './components/dialogMark.vue'
 import dialogBudget from './components/dialogBudget.vue'
+import { Plus, DataLine } from '@element-plus/icons-vue'
+import monthCostChart from './components/monthCostChart.vue'
+import yearCostChart from './components/yearCostChart.vue'
 
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex';
-import { budgetMonthCost } from 'src/api/bill';
+import { useStore } from 'vuex'
+import { budgetMonthCost } from 'src/api/bill'
+import { dateFormat } from 'src/utils/date'
 
 interface budgetModal {
   budget: number
@@ -133,6 +138,20 @@ let _data = ref<pageData>({
   chartComponent: null,
 })
 
+const componentMap: Map<string, any> = new Map()
+componentMap.set('月度支出表', monthCostChart)
+componentMap.set('年度支出表', yearCostChart)
+
+watch(
+  () => _data.value.curChart,
+  (n, o) => {
+    _data.value.chartComponent = componentMap.get(n)
+  },
+  {
+    immediate: true,
+  }
+)
+
 const router = useRouter()
 
 const goBack = () => {
@@ -140,14 +159,19 @@ const goBack = () => {
 }
 const changeMonth = () => {}
 
-onMounted(()=>{
+onMounted(() => {
+  _data.value.dateStr = dateFormat(new Date(), 'yyyy-MM')
   getBudget()
 })
 const store = useStore()
-const getBudget = async (params:any ={})=>{
-  params.uid = store.state.user.id;
-  let { data, msg, code } = await budgetMonthCost(params);
-  _data.value.budget = data;
+const getBudget = async (params: any = {}) => {
+  let param = {
+    uid: store.state.user.id,
+    dataStr: _data.value.dateStr,
+  }
+  let res: any = await budgetMonthCost(param)
+  let { data, msg, code } = res
+  _data.value.budget = data
 }
 let recordDialogVisible = ref<boolean>(false)
 const showRecordModal = () => {
@@ -157,7 +181,7 @@ const recordDialogClose = () => {
   recordDialogVisible.value = false
 }
 const recordDialogSuccess = () => {
-  recordDialogClose()
+  getBudget()
 }
 
 let budgetDialogVisible = ref<boolean>(false)
@@ -168,7 +192,7 @@ const budgetDialogClose = () => {
   budgetDialogVisible.value = false
 }
 const budgetDialogSuccess = () => {
-  recordDialogClose()
+  getBudget()
 }
 
 const cancelBudget = () => {}
