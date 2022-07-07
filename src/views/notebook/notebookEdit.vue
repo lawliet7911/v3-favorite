@@ -320,10 +320,16 @@ const onUploadImg = async (files: Array<File>, callback: Function | any) => {
       return new Promise((rev, rej) => {
         const form = new FormData()
         form.append('file', file)
-
+        _data.value.editLoading = true
         upload(form)
-          .then((res) => rev(res))
-          .catch((error) => rej(error))
+          .then((res) => {
+            _data.value.editLoading = false
+            rev(res)
+          })
+          .catch((error) => {
+            _data.value.editLoading = false
+            rej(error)
+          })
       })
     })
   )
