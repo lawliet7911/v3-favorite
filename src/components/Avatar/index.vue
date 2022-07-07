@@ -1,7 +1,6 @@
 <template>
   <div class="avatar">
-    <img @click="showUserWin" @dblclick="logout" :src="avatarSrc" alt="" />
-    <!-- <login-form @close="close" v-show="_data.flag" :flag="_data.flag"></login-form> -->
+    <img :src="avatarSrc" alt="" />
   </div>
 </template>
 
@@ -17,13 +16,9 @@ const _data = ref<pageData>({
   src: '',
 })
 
-const avatarSrc = computed(():string => {
+const avatarSrc = computed((): string => {
   return _data.value.src ? _data.value.src : 'https://s2.loli.net/2022/07/07/pn5x6EK7WzaAPGy.png'
 })
-
-const close = () => {}
-const logout = () => {}
-const showUserWin = () => {}
 </script>
 
 <style lang="scss" scoped>

@@ -28,7 +28,7 @@ import { checkEncryption } from 'src/api/user'
 
 const store = useStore()
 const props = defineProps({
-  visible:Boolean
+  visible: Boolean,
 })
 
 interface formObject {

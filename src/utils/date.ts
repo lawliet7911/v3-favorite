@@ -1,8 +1,12 @@
-export function dateFormat(
-  date: Date | string | number,
-  fmt: string = "yyyy-MM-dd HH:mm:ss"
-) {
-  if (typeof date == "string" || typeof date == "number") {
+/** 
+ * 格式化
+ * @export
+ * @param {(Date | string | number)} date
+ * @param {string} [fmt='yyyy-MM-dd HH:mm:ss']
+ * @returns
+ */
+export function dateFormat(date: Date | string | number, fmt: string = 'yyyy-MM-dd HH:mm:ss') {
+  if (typeof date == 'string' || typeof date == 'number') {
     date = new Date(date)
   }
   let ss = new Map([
@@ -26,12 +30,7 @@ export function dateFormat(
   }
   ss.forEach((val, key) => {
     if (key.test(fmt)) {
-      fmt = fmt.replace(
-        RegExp.$1,
-        1 == RegExp.$1.length
-          ? val.toString()
-          : `00${val}`.substr(val.toString().length)
-      )
+      fmt = fmt.replace(RegExp.$1, 1 == RegExp.$1.length ? val.toString() : `00${val}`.substr(val.toString().length))
     }
   })
   return fmt

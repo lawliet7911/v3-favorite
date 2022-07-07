@@ -4,12 +4,12 @@
 
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-import {ECharts,EChartOption} from 'echarts'
+import { ECharts, EChartOption } from 'echarts'
 import { monthChart } from 'src/api/bill.js'
 import { CHAR_MONTH_OPTIONS } from '../enums'
 import { onMounted, ref } from 'vue'
 
-const props= defineProps({
+const props = defineProps({
   dateStr: String,
 })
 let chartId = ref<string>('')
@@ -19,7 +19,7 @@ let chartId = ref<string>('')
 //   getData()
 // })
 
-let chart:ECharts|null = null
+let chart: ECharts | null = null
 
 const getData = async () => {
   let res = await monthChart({ dateStr: props.dateStr })
@@ -35,8 +35,8 @@ const getData = async () => {
     }
   }
   if (chart) chart.dispose()
-  let dom = document.getElementById(chartId.value);
-  debugger;
+  let dom = document.getElementById(chartId.value)
+  debugger
   chart = echarts.init(dom as any)
   // 绘制图表
   chart.setOption(CHAR_MONTH_OPTIONS as any)

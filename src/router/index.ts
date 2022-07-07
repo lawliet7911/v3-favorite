@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw,NavigationGuardNext } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw, NavigationGuardNext } from 'vue-router'
 
 import Home from 'src/views/Home.vue'
 import Login from 'src/views/login/login.vue'
@@ -17,36 +17,35 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
   },
   {
-    path: "/notebook",
-    name: "Notebook",
+    path: '/notebook',
+    name: 'Notebook',
     component: BasicLayout,
     children: [
       {
-        path: "edit/:id?",
-        name: "NotebookEdit",
-        component: () => import("src/views/notebook/notebookEdit.vue"),
+        path: 'edit/:id?',
+        name: 'NotebookEdit',
+        component: () => import('src/views/notebook/notebookEdit.vue'),
       },
       {
-        path: "see/:id",
-        name: "NotebookWatch",
-        component: () => import("src/views/notebook/notebook.vue"),
-      },
-    ]
-  },
-  {
-    // markdown笔记
-    path: "/bill",
-    name: "Bill",
-    component: BasicLayout,
-    children: [
-      {
-        path: "watch",
-        name: "MyBill",
-        component: () => import("src/views/Bill/bill.vue"),
+        path: 'see/:id',
+        name: 'NotebookWatch',
+        component: () => import('src/views/notebook/notebook.vue'),
       },
     ],
   },
-
+  {
+    // markdown笔记
+    path: '/bill',
+    name: 'Bill',
+    component: BasicLayout,
+    children: [
+      {
+        path: 'watch',
+        name: 'MyBill',
+        component: () => import('src/views/Bill/bill.vue'),
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
@@ -54,7 +53,7 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next:NavigationGuardNext) => {
+router.beforeEach((to, from, next: NavigationGuardNext) => {
   // 未登录
   if (to.name != 'Login') {
     if (store.state?.user?.id) {
@@ -68,8 +67,8 @@ router.beforeEach((to, from, next:NavigationGuardNext) => {
       next({ name: 'Home' })
     } else {
       if (to.params.logout !== undefined) next()
-      else{ 
-        next({ name: 'Login', params: { logout: !!to.params.logout?1:0 } })
+      else {
+        next({ name: 'Login', params: { logout: !!to.params.logout ? 1 : 0 } })
       }
     }
   }

@@ -1,6 +1,5 @@
 import request from 'src/utils/request'
 import qs from 'qs'
-import { AxiosPromise } from 'axios'
 interface BaseResponse {
   success: boolean
   data: []

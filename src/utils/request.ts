@@ -13,12 +13,10 @@ const axios = Axios.create({
 axios.interceptors.request.use(
   (config) => {
     // 在发出请求前做点什么
-
     return config
   },
   (error) => {
     // 处理请求错误
-    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -51,14 +49,11 @@ axios.interceptors.response.use(
     }
   },
   (error) => {
-    console.log('err' + error) // for debug
-
     ElMessage({
       type: 'error',
       duration: TIMEOUT_SECOND * 1000,
       message: error.message,
     })
-
     return Promise.reject(error)
   }
 )

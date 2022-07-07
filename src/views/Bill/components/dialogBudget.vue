@@ -32,7 +32,6 @@ watch(
   () => props.visible,
   (n, o) => {
     if (n) {
-      console.log(props)
       budgetForm.value.dateMonth = (props as any).data.dateStr
       budgetForm.value.budget = (props as any).data.budget.budget
     }

@@ -52,8 +52,6 @@ let props = defineProps({
   visible: Boolean,
 })
 
-let recordDialogVisible = <boolean>false
-
 const rules: FormRules = {
   costDate: [{ required: true, message: '请选择日期', trigger: 'change' }],
   amount: [{ required: true, message: '请输入金额', trigger: 'blur' }],

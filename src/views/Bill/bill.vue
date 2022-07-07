@@ -194,8 +194,6 @@ const budgetDialogClose = () => {
 const budgetDialogSuccess = () => {
   getBudget()
 }
-
-const cancelBudget = () => {}
 </script>
 
 <style lang="scss" scoped>

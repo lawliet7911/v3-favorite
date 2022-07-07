@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
-import { ElCard,ElIcon } from "element-plus"
-import { useRouter } from "vue-router"
-import { menuList } from "src/api/menu"
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { menuList } from 'src/api/menu'
 
 const router = useRouter()
 
@@ -13,36 +12,23 @@ interface menuItem {
   order: number
   routeName: string
 }
-let menus = ref<any[]>([]);
+let menus = ref<any[]>([])
 
-// let menus = ref<menuItem[]>([])
-
-onMounted(async ()=>{
-let { data } = await menuList({})
-  menus.value = data;
+onMounted(async () => {
+  let { data } = await menuList({})
+  menus.value = data
 })
-
-
-// menus.value = data
 
 let handleNavigate = (item: menuItem, evt: any) => {
   router.push({ name: item.routeName })
 }
-
 </script>
 
 <template>
   <div class="home">
     <div class="cards">
-      <el-card
-        class="card"
-        :body-style="{ padding: 0 }"
-        shadow="hover"
-        :key="item.id"
-        v-for="item in menus"
-      >
+      <el-card class="card" :body-style="{ padding: 0 }" shadow="hover" :key="item.id" v-for="item in menus">
         <div class="card-item" @click="handleNavigate(item, $event)">
-          <!-- <i :class="item.icon"></i> -->
           <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.name }}</span>
         </div>

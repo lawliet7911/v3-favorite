@@ -372,7 +372,7 @@ const validSuccess = (): void => {
 
 const getNoteDetail = async () => {
   if (!_data.value.currentChoose) return
-  
+
   _data.value.editLoading = true
   let { data } = await getNote(_data.value.currentChoose.id)
   _data.value.editLoading = false

@@ -4,7 +4,6 @@ import storage from './utils/storage'
 let store = useStore()
 let user = storage.get('user')
 let user_expTime = storage.get('user-expTime')
-console.log(user_expTime)
 if (user_expTime < new Date().getTime()) {
   storage.remove('user')
   storage.remove('user-expTime')
@@ -14,7 +13,7 @@ if (user_expTime < new Date().getTime()) {
 
 <template>
   <router-view />
-  <my-avatar/>
+  <my-avatar />
 </template>
 
 <style>
