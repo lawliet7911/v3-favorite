@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import * as echarts from 'echarts'
 import { ECharts, EChartOption } from 'echarts'
-import { monthChart } from 'src/api/bill.js'
+import { monthChart } from 'src/api/bill'
 import { CHAR_MONTH_OPTIONS } from '../enums'
 import { onMounted, ref } from 'vue'
 
