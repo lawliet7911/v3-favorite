@@ -1,9 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { Router, useRouter } from 'vue-router'
 import { menuList } from 'src/api/menu'
-
-const router = useRouter()
 
 interface menuItem {
   id: string
@@ -12,14 +10,15 @@ interface menuItem {
   order: number
   routeName: string
 }
-let menus = ref<any[]>([])
 
-onMounted(async () => {
+let menus = ref<any[]>([])
+onMounted(async (): Promise<void> => {
   let { data } = await menuList({})
   menus.value = data
 })
 
-let handleNavigate = (item: menuItem, evt: any) => {
+const router: Router = useRouter()
+const handleNavigate = (item: menuItem, evt: any): void => {
   router.push({ name: item.routeName })
 }
 </script>
