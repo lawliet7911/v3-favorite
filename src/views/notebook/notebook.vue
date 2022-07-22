@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouteParams, useRoute } from 'vue-router'
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { getNote } from 'src/api/notebook'
 
 let text = ref('')
 let _text = ref('')
-let params = reactive(useRoute().params)
+let params:any = useRoute().params
 let encryptionFlag = ref(false)
 let hasValid = ref(false)
 
@@ -32,14 +32,6 @@ const validSuccess = (): void => {
 
 onMounted(() => {
   getNoteDetail()
-  watch(
-    () => {
-      params.id
-    },
-    (newv, oldv) => {
-      alert(1)
-    }
-  )
 })
 </script>
 
