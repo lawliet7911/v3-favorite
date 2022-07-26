@@ -1,11 +1,18 @@
 stages:  #定义步骤列表类型，从上往下执行
+    - install
     - build
     - release
+cache:
+install:
+    stage: install
+    script:
+        - npm i
 build: #job名字
     stage: build  #和stages对应的名字
     image: #i.harbor.xxxx.com/public/node:10-alpine-node-sass  #使用的镜像，如果不写，就是注册runner默认镜像
     script:
-        - npm -v ## 随意写一些命令
+        - npm i ## 随意写一些命令
+        - npm run build
     artifacts:  #构建完成后，构建的产物（目录或者文件），丢给后面的步骤
         untracked: false # git没有追踪就不交付 用于优化node_modules
         paths:
