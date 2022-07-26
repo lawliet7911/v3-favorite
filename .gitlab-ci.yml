@@ -2,24 +2,31 @@ stages: #定义步骤列表类型，从上往下执行
   - install
   - build
   - deploy
+
 cache: #缓存
   paths:
     - node_modules
     - dist
+
 install-job:
   stage: install
   script:
-    - npm install
-build-job: #job名字
-  stage: build #和stages对应的名字
-  image: #i.harbor.xxxx.com/public/node:10-alpine-node-sass  #使用的镜像，如果不写，就是注册runner默认镜像
+    - npm install --registry=https://r.cnpmjs.org
+
+build-job:
+  stage: build
   script:
     - npm run build
   tags: #选择runner的tag
+    - runner
+  only:
     - master
-deploy-job:
+
+deploy:
   stage: deploy
   tags:
-    - master
+    - runner
   scripts:
     - echo '成功'
+   only:
+    - master
