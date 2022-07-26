@@ -15,4 +15,4 @@ install-job:
     - echo '成功'
     # --registry=https://r.cnpmjs.org
   tags: #选择runner的tag
-    - runner
+    - dddddd
