@@ -1,7 +1,5 @@
 stages: #定义步骤列表类型，从上往下执行
   - install
-  - build
-  - dep
 
 cache: #缓存
   paths:
@@ -10,29 +8,12 @@ cache: #缓存
 
 install-job:
   stage: install
-  script:
-    - npm install 
-    # --registry=https://r.cnpmjs.org
-  tags: #选择runner的tag
-    - runner
-
-build-job:
-  stage: build
+  before_script:
+    - npm install
   script:
     - npm run build
   after_script:
     - echo '成功'
+    # --registry=https://r.cnpmjs.org
   tags: #选择runner的tag
     - runner
-  only:
-    - master
-
-
-dep-job:
-  stage: dep
-  script:
-    - echo '成功'
-  tags: #选择runner的tag
-    - runner
-  only:
-    - master
