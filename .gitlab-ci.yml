@@ -17,8 +17,6 @@ build-job: #job名字
     - npm run build
   tags: #选择runner的tag
     - master
-  #only: #构建选择，如下，只选择develop的分支构建
-   # - master
 deploy-job:
   stage: deploy
   tags:
