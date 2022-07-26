@@ -1,6 +1,10 @@
 stages: #定义步骤列表类型，从上往下执行
   - install
-  
+
+cache: #缓存
+  paths:
+    - node_modules
+
 install-job:
   stage: install
   before_script:
