@@ -10,7 +10,7 @@ install-job:
   before_script:
     - yarn
   script:
-    - npm run build
+    - yarn build
   after_script:
     - echo '成功'
     # --registry=https://r.cnpmjs.org
