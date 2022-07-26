@@ -1,48 +1,27 @@
-stages:  #定义步骤列表类型，从上往下执行
-    - install
-    - build
-    - release
-cache:
-install:
-    stage: install
-    script:
-        - npm i
-build: #job名字
-    stage: build  #和stages对应的名字
-    image: #i.harbor.xxxx.com/public/node:10-alpine-node-sass  #使用的镜像，如果不写，就是注册runner默认镜像
-    script:
-        - npm i ## 随意写一些命令
-        - npm run build
-    artifacts:  #构建完成后，构建的产物（目录或者文件），丢给后面的步骤
-        untracked: false # git没有追踪就不交付 用于优化node_modules
-        paths:
-            - .
-        expire_in: 30 mins #保留1天内产物
-    tags:  #选择runner的tag
-        - master
-    only:  #构建选择，如下，只选择develop的分支构建
-        - master
-release:
-    stage: release
-    before_script:  #执行前执行
-        - eval $(ssh-agent -s)
-        - echo "$SAIAN_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-        - mkdir -p ~/.ssh
-        - chmod 700 ~/.ssh
-        #- ssh-keyscan x.x.x.x >> ~/.ssh/known_hosts
-        #- chmod 644 ~/.ssh/known_hosts
-        - git config --global user.email "XX@qq.com"
-        - git config --global user.name "root"
-
-    image: i.harbor.xxxx.net/public/ssh-client:rsync
-    script:
-        - ssh -p 22088 -o StrictHostKeyChecking=no root@x.x.x.x -- "pm2 del saian-web|true"
-        - rsync -azP --exclude=".gitignore" --exclude=".git" ./  /www/wwwroot/saian/
-        - ssh -p 22088 -o StrictHostKeyChecking=no root@x.x.x.x -- "ls -al /www/wwwroot/saian/"
-        - ssh -p 22088 -o StrictHostKeyChecking=no root@x.x.x.x -- "cd /www/wwwroot/saian/ && npm install && npm run build"
-        - ssh -p 22088 -o StrictHostKeyChecking=no root@x.x.x.x -- "cd /www/wwwroot/saian/ && pm2 --watch --name saian-web start  /www/wwwroot/saian/node_modules/nuxt/bin/nuxt.js -- start"
-    tags:
-        - master
-    only:
-        - master
-    when: on_success #只有当上一个job成功才执行，默认就是on_success
+stages: #定义步骤列表类型，从上往下执行
+  - install
+  - build
+  - deploy
+cache: #缓存
+paths:
+  - node_modules
+  - dist
+install-job:
+  stage: install
+  script:
+    - npm install
+build-job: #job名字
+  stage: build #和stages对应的名字
+  image: #i.harbor.xxxx.com/public/node:10-alpine-node-sass  #使用的镜像，如果不写，就是注册runner默认镜像
+  script:
+    - npm run build
+  tags: #选择runner的tag
+    - master
+  #only: #构建选择，如下，只选择develop的分支构建
+   # - master
+deploy-job:
+  stage: deploy
+  tags:
+    - master
+  scripts:
+    - echo '成功'
