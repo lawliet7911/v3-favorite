@@ -3,9 +3,9 @@ stages: #定义步骤列表类型，从上往下执行
   - build
   - deploy
 cache: #缓存
-paths:
-  - node_modules
-  - dist
+  paths:
+    - node_modules
+    - dist
 install-job:
   stage: install
   script:
