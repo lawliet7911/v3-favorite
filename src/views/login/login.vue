@@ -4,10 +4,14 @@ import { FormInstance, FormRules } from 'element-plus'
 import { checkPwd } from 'src/api/user'
 import storage from 'src/utils/storage'
 
-import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserState } from 'src/store'
+import { useDark, useToggle } from '@vueuse/core'
 
-let store = useStore()
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+
+let userState = useUserState()
 let route = useRoute()
 
 let rules: FormRules = {
@@ -22,6 +26,7 @@ let loginObj = ref({
   logout: false,
   exp: 15,
 })
+
 onMounted(() => {
   let { params } = route
   if (params.logout == '1') {
@@ -58,7 +63,7 @@ const login = (formEl: FormInstance): void => {
     if (data.length) {
       let d = data[0]
       delete d.pwd
-      store.commit('SET_USER', d)
+      userState.setUser(d)
       if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp * 24)
       else storage.set('user', d)
       loginObj.value.animation = true
@@ -98,6 +103,7 @@ const login = (formEl: FormInstance): void => {
         </el-form-item>
       </el-form>
       <div class="login-btn" :class="{ out: loginObj.animation }" @click="login(loginForm)">确 定</div>
+      <div class="tte" @click="toggleDark">12313</div>
     </div>
   </div>
 </template>

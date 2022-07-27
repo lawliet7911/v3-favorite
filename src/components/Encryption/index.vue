@@ -23,10 +23,10 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import type { FormRules, FormInstance } from 'element-plus'
-import { useStore } from 'vuex'
 import { checkEncryption } from 'src/api/user'
+import { useUserState } from 'src/store';
 
-const store = useStore()
+const userState = useUserState()
 const props = defineProps({
   visible: Boolean,
 })
@@ -71,7 +71,7 @@ const login = (formEl: FormInstance): void => {
     if (!flag) return
     let params = {
       pwd: _data.value.form.pwd,
-      uid: store.state.user.id,
+      uid: userState.user.id,
     }
     let data = await checkEncryption(params)
     if (data.data) {

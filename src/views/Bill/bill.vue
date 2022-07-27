@@ -93,9 +93,9 @@ import yearCostChart from './components/yearCostChart.vue'
 
 import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
 import { budgetMonthCost } from 'src/api/bill'
 import { dateFormat } from 'src/utils/date'
+import { useUserState } from 'src/store'
 
 interface budgetModal {
   budget: number
@@ -163,10 +163,10 @@ onMounted(() => {
   _data.value.dateStr = dateFormat(new Date(), 'yyyy-MM')
   getBudget()
 })
-const store = useStore()
+const userState = useUserState()
 const getBudget = async (params: any = {}) => {
   let param = {
-    uid: store.state.user.id,
+    uid: userState.user.id,
     dataStr: _data.value.dateStr,
   }
   let res: any = await budgetMonthCost(param)

@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw, NavigationGuardNext
 
 import Home from 'src/views/Home.vue'
 import Login from 'src/views/login/login.vue'
-import store from 'src/store/index'
+import { useUserState } from 'src/store/index'
 import BasicLayout from 'src/layout/layout.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -54,16 +54,17 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next: NavigationGuardNext) => {
+  let userState = useUserState();
   // 未登录
   if (to.name != 'Login') {
-    if (store.state?.user?.id) {
+    if (userState.user?.id) {
       next()
     } else {
       next({ name: 'Login' })
     }
   } else {
     // next();
-    if (store.state?.user?.id) {
+    if (userState.user?.id) {
       next({ name: 'Home' })
     } else {
       if (to.params.logout !== undefined) next()

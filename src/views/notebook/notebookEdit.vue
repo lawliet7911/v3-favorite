@@ -112,7 +112,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
@@ -124,9 +123,9 @@ import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebo
 import { upload } from 'src/api/common'
 import storage from 'src/utils/storage'
 import { objectToString } from 'src/utils/common'
+import { useUserState } from 'src/store'
 
 const router = useRouter()
-const store = useStore()
 
 const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
 
@@ -183,8 +182,9 @@ let _data = ref<noteBookData>({
 
 const _d = _data.value
 
+const userState = useUserState()
 onMounted(async () => {
-  let user = store.state.user //storage.get("user")
+  let user = userState.user //storage.get("user")
   _d.user = user
   getNoteList()
 })

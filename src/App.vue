@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { onMounted } from 'vue'
+import { useUserState } from './store'
 import storage from './utils/storage'
-let store = useStore()
 let user = storage.get('user')
 let user_expTime = storage.get('user-expTime')
+let userState = useUserState()
 if (user_expTime < new Date().getTime()) {
   storage.remove('user')
   storage.remove('user-expTime')
-  store.commit('SET_USER', {})
-} else store.commit('SET_USER', user)
+  userState.setUser({}, 'app')
+} else userState.setUser(user)
 </script>
 
 <template>

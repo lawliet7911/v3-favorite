@@ -33,9 +33,9 @@ axios.interceptors.response.use(
           message: '登录超时',
         })
 
-        store.dispatch('resetToken').then(() => {
-          location.reload()
-        })
+        // store.dispatch('resetToken').then(() => {
+        //   location.reload()
+        // })
       }
 
       ElMessage({

@@ -1,29 +1,23 @@
-import { createStore } from 'vuex'
+import { useStorage, useStorageAsync } from '@vueuse/core'
+import { defineStore } from 'pinia'
 import storage from 'src/utils/storage'
 import router from 'src/router'
 
-const defaultState = {
-  user: storage.get('user'),
-}
-export default createStore({
-  state() {
-    return defaultState
+export const useUserState = defineStore('user', {
+  state: () => {
+    return {
+      user: storage.get('user') || {},
+    }
   },
-  getters: {
-    user: (state: typeof defaultState): object => {
-      return state.user
+  actions: {
+    setUser(data: object, f?: string) {
+      this.user = data
     },
-  },
-  mutations: {
-    SET_USER(state: typeof defaultState, data: any) {
-      state.user = data
-    },
-    LOGOUT(state: typeof defaultState) {
-      state.user = {}
+    LOGOUT() {
+      this.user = {}
       storage.remove('user')
       storage.remove('user-expTime')
       router.push({ name: 'Login', params: { logout: 1 } })
     },
   },
-  actions: {},
 })
