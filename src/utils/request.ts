@@ -1,6 +1,5 @@
 import Axios, { AxiosInstance } from 'axios'
 import { ElMessage } from 'element-plus'
-import store from '../store/index'
 
 const SERVER_ERROR_TEXT: string = ' 服务器错误，请稍后重试'
 const TIMEOUT_SECOND: number = 120
@@ -33,9 +32,6 @@ axios.interceptors.response.use(
           message: '登录超时',
         })
 
-        // store.dispatch('resetToken').then(() => {
-        //   location.reload()
-        // })
       }
 
       ElMessage({

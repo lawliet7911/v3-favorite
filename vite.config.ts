@@ -2,7 +2,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-// https://vitejs.dev/config/
+const dotenv = require('dotenv');
+
+dotenv.config({path:`.env.${process.env.NODE_ENV}`}); 
+
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -12,12 +15,12 @@ export default defineConfig({
   },
   base: './',
   server: {
+    host: true,
     open: true,
     cors: true,
     proxy: {
       '^.api': {
-        target: 'http://192.168.0.107:5656',
-        // target: 'http://192.168.22.122:5656',
+        target: process.env.API_URL,
         ws: true,
         secure: false,
       },
