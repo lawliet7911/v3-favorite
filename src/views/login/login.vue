@@ -103,11 +103,16 @@ const login = (formEl: FormInstance): void => {
         </el-form-item>
       </el-form>
       <div class="login-btn" :class="{ out: loginObj.animation }" @click="login(loginForm)">确 定</div>
-      <div class="tte" @click="toggleDark">12313</div>
+      <!-- <div class="tte" @click="toggleDark">12313</div> -->
     </div>
+    <a class="link" href="https://beian.miit.gov.cn/">备案号：鄂ICP备2022001970号-1</a>
   </div>
 </template>
 
 <style lang="scss" scoped>
 @import './login.scss';
+.link {
+  position:absolute;
+  bottom: 20px;
+}
 </style>
