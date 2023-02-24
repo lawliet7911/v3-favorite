@@ -47,8 +47,11 @@
     "vue-tsc": "^0.34.17"
   },
   "lint-staged": {
-    "*.{js,jsx,tsx,ts,vue}": [
+    "*.{js,ts,vue,jsx,tsx}": [
       "pnpm lint"
+    ],
+    "*.{html,css,less,scss,md}": [
+      "prettier --write"
     ]
   }
 }
