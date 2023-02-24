@@ -1,5 +1,5 @@
 import request from 'src/utils/request'
-export function menuList(params: any) {
+export function menuList() {
   return request({
     url: '/api/menu',
     method: 'get'

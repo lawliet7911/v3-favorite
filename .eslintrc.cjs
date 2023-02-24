@@ -17,6 +17,10 @@ module.exports = {
     sourceType: 'module',
     parser: '@typescript-eslint/parser'
   },
-  plugins: ['vue', '@typescript-eslint'],
-  rules: {}
+  plugins: ['vue', '@typescript-eslint', 'prettier'],
+  rules: {
+    'prettier/prettier': 'error',
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off'
+  }
 }

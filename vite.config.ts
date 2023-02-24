@@ -1,14 +1,17 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
-
 import * as dotenv from 'dotenv'
-dotenv.config()
-
+import viteEslint from 'vite-plugin-eslint'
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    viteEslint({
+      failOnError: false
+    })
+  ],
   resolve: {
     alias: {
       src: resolve(__dirname, 'src')
@@ -17,7 +20,6 @@ export default defineConfig({
   base: './',
   server: {
     host: true,
-    open: true,
     cors: true,
     proxy: {
       '^.api': {

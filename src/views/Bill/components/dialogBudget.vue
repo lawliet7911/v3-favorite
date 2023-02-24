@@ -47,6 +47,9 @@ watch(
   (n, o) => {
     if (n) {
       budgetForm.value.dateMonth = 
+
+
+      
       (props as any).data.dateStr
       budgetForm.value.budget = 
       (props as any).data.budget.budget
