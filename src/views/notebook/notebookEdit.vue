@@ -40,7 +40,7 @@
           class="note-item"
         >
           <el-icon @click.stop="itemDel(note)" v-if="note.delVisible" class="note-delete" :size="14"><Close /></el-icon>
-          <p class="_title">{{ note.title || '未命名' }}</p>
+          <p :title="note.title" class="_title">{{ note.title || '未命名' }}</p>
           <p class="_time">{{ dateFormat(note.time) }}</p>
         </div>
       </div>

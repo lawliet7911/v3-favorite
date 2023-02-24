@@ -88,6 +88,10 @@
 
         ._title {
           font-size: 14px;
+          max-width: 200px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          word-break: keep-all;
           margin-bottom: 5px;
         }
 
@@ -109,6 +113,7 @@
 
   .right-editor {
     flex: 1;
+    max-width: calc(100% - 235px);
 
     #md-editor-v3 {
       height: 100%;
