@@ -32,7 +32,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ElNotification, FormInstance, FormRules } from 'element-plus'
+import 
+{ ElNotification, FormInstance, FormRules } from 'element-plus'
 import { addBudget } from 'src/api/bill'
 import { ref, watch } from 'vue'
 
@@ -45,8 +46,10 @@ watch(
   () => props.visible,
   (n, o) => {
     if (n) {
-      budgetForm.value.dateMonth = (props as any).data.dateStr
-      budgetForm.value.budget = (props as any).data.budget.budget
+      budgetForm.value.dateMonth = 
+      (props as any).data.dateStr
+      budgetForm.value.budget = 
+      (props as any).data.budget.budget
     }
   }
 )

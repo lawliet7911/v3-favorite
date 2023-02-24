@@ -29,11 +29,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type 
-
-{ FormRules, FormInstance } 
-
-from 'element-plus'
+import type { FormRules, FormInstance } from 'element-plus'
 import { checkEncryption } from 'src/api/user'
 import { useUserState } from 'src/store'
 
