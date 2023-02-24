@@ -254,14 +254,20 @@ const cancel = () => {
   }
 }
 
-const getNoteList = async (type: number | void) => {
+const getNoteList = async () => {
   _d.listLoading = true
-  let params = {
-    uid: _d.user.id
-  }
+  let params = getNoteListParams()
   let { data } = await getNotes(params)
   _d.listLoading = false
   _d.noteList = data
+}
+
+const getNoteListParams = () => {
+  let params = {
+    uid: _d.user.id,
+    showCollection: _d.sortType === 1 ? 1 : undefined
+  }
+  return params
 }
 
 const save = () => {
@@ -369,9 +375,7 @@ const submitDelete = async (id?: string) => {
 const handleSortTypeChange = (type: number): void => {
   if (_d.sortType === type) return
   _d.sortType = type
-  // 接口
-  type === 0 && getNoteList()
-  type === 1 && getNoteList(1)
+  getNoteList()
 }
 
 const chooseItem = (note: noteItem) => {
