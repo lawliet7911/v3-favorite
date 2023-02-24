@@ -10,7 +10,7 @@ import { useUserState } from 'src/store'
 import { useDark, useToggle } from '@vueuse/core'
 
 const isDark = useDark()
-const toggleDark = useToggle(isDark)
+// const toggleDark = useToggle(isDark)
 
 let userState = useUserState()
 let route = useRoute()

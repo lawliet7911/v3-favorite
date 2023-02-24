@@ -24,7 +24,7 @@
     .left-top {
       height: 65px;
       box-sizing: border-box;
-      padding: 10px;
+      padding: 10px 10px 0;
 
       .tp-btn {
         display: flex;
@@ -58,10 +58,37 @@
       }
     }
 
+    .sort {
+      display: flex;
+      font-size: 13px;
+      height: 23px;
+      box-sizing: border-box;
+      text-align: center;
+
+      div {
+        flex: 1;
+        line-height: 23px;
+        height: 100%;
+        cursor: pointer;
+        position: relative;
+        &.choose::after {
+          content: '';
+          display: inline-block;
+          width: 70px;
+          height: 1px;
+          position: absolute;
+          bottom: 2px;
+          background: #2c3e50;
+          left: 50%;
+          margin-left: -35px;
+        }
+      }
+    }
+
     .note-items {
       @include scrollBar();
       overflow-y: scroll;
-      height: calc(100% - 65px);
+      height: calc(100% - 88px);
       flex: 1;
 
       .note-item {

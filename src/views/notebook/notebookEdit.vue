@@ -35,6 +35,16 @@
         </div>
         <p>笔记</p>
       </div>
+      <div class="sort">
+        <div
+          v-for="sort in sorts"
+          :key="sort.value"
+          @click="handleSortTypeChange(sort.value)"
+          :class="{ choose: _data.sortType == sort.value }"
+        >
+          {{ sort.name }}
+        </div>
+      </div>
       <div class="note-items">
         <div
           @mouseenter="itemEnter(note)"
@@ -144,7 +154,7 @@ import { dateFormat } from 'src/utils/date'
 import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
 import { upload } from 'src/api/common'
 import storage from 'src/utils/storage'
-import { objectToString } from 'src/utils/common'
+// import { objectToString } from 'src/utils/common'
 import { useUserState } from 'src/store'
 
 const router = useRouter()
@@ -182,8 +192,25 @@ interface noteBookData {
   currentChoose: noteItem
   encryptionStatus: number
   encryptionFlag: boolean
+  sortType: number
   toolbarsExclude: ToolbarNames[]
 }
+
+interface sortType {
+  name: string
+  value: number
+}
+
+const sorts = ref<sortType[]>([
+  {
+    name: '全部',
+    value: 0
+  },
+  {
+    name: '按收藏夹',
+    value: 1
+  }
+])
 
 let _data = ref<noteBookData>({
   noteListF: [],
@@ -199,6 +226,7 @@ let _data = ref<noteBookData>({
   encryptionStatus: 0,
   encryptionFlag: false,
   currentChoose: <noteItem>{},
+  sortType: 0,
   toolbarsExclude: ['github']
 })
 
@@ -226,7 +254,7 @@ const cancel = () => {
   }
 }
 
-const getNoteList = async () => {
+const getNoteList = async (type: number | void) => {
   _d.listLoading = true
   let params = {
     uid: _d.user.id
@@ -336,6 +364,14 @@ const submitDelete = async (id?: string) => {
     _d.text = ''
   }
   getNoteList()
+}
+
+const handleSortTypeChange = (type: number): void => {
+  if (_d.sortType === type) return
+  _d.sortType = type
+  // 接口
+  type === 0 && getNoteList()
+  type === 1 && getNoteList(1)
 }
 
 const chooseItem = (note: noteItem) => {
