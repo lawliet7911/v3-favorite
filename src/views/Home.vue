@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { Router, useRouter } from 'vue-router'
@@ -26,7 +27,13 @@ const handleNavigate = (item: menuItem, evt: any): void => {
 <template>
   <div class="home">
     <div class="cards">
-      <el-card class="card" :body-style="{ padding: 0 }" shadow="hover" :key="item.id" v-for="item in menus">
+      <el-card
+        class="card"
+        :body-style="{ padding: 0 }"
+        shadow="hover"
+        :key="item.id"
+        v-for="item in menus"
+      >
         <div class="card-item" @click="handleNavigate(item, $event)">
           <el-icon><component :is="item.icon" /></el-icon>
           <span>{{ item.name }}</span>

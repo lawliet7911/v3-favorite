@@ -13,7 +13,7 @@ interface pageData {
 
 const _data = ref<pageData>({
   flag: false,
-  src: '',
+  src: ''
 })
 
 const avatarSrc = computed((): string => {

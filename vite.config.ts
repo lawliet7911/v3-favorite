@@ -2,16 +2,17 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-const dotenv = require('dotenv');
+import * as dotenv from 'dotenv'
+dotenv.config()
 
-dotenv.config({path:`.env.${process.env.NODE_ENV}`}); 
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
 
 export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      src: resolve(__dirname, 'src'),
-    },
+      src: resolve(__dirname, 'src')
+    }
   },
   base: './',
   server: {
@@ -22,8 +23,8 @@ export default defineConfig({
       '^.api': {
         target: process.env.API_URL,
         ws: true,
-        secure: false,
-      },
-    },
-  },
+        secure: false
+      }
+    }
+  }
 })

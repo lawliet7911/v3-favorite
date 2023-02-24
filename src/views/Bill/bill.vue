@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="bill-main">
     <div class="header">
@@ -52,8 +53,12 @@
     </el-collapse>
 
     <div class="fn-btns">
-      <el-button @click="showRecordModal" :icon="Plus" size="large" type="primary">记一笔</el-button>
-      <el-button @click="showBudgetModal" :icon="DataLine" size="large" type="primary">设置本月预算</el-button>
+      <el-button @click="showRecordModal" :icon="Plus" size="large" type="primary"
+        >记一笔</el-button
+      >
+      <el-button @click="showBudgetModal" :icon="DataLine" size="large" type="primary"
+        >设置本月预算</el-button
+      >
     </div>
 
     <div class="chart-content">
@@ -69,14 +74,14 @@
 
     <!-- 记一笔 -->
     <dialog-mark
-      :visible.sync="recordDialogVisible"
+      v-model:visible="recordDialogVisible"
       @close="recordDialogClose"
       @success="recordDialogSuccess"
     ></dialog-mark>
 
     <!-- 设置预算 -->
     <dialog-budget
-      :visible.sync="budgetDialogVisible"
+      v-model:visible="budgetDialogVisible"
       @close="budgetDialogClose"
       @success="budgetDialogSuccess"
       :data="_data"
@@ -125,17 +130,17 @@ let _data = ref<pageData>({
   budget: {
     budget: 0,
     curUse: 0,
-    percentage: 0,
+    percentage: 0
   },
   activeAccordionName: '1',
   accountDetail: {
     total: 0,
     bankBalance: 0,
     alipayDebt: 0,
-    creditDebt: 0,
+    creditDebt: 0
   },
   curChart: '月度支出表',
-  chartComponent: null,
+  chartComponent: null
 })
 
 const componentMap: Map<string, any> = new Map()
@@ -148,7 +153,7 @@ watch(
     _data.value.chartComponent = componentMap.get(n)
   },
   {
-    immediate: true,
+    immediate: true
   }
 )
 
@@ -157,7 +162,9 @@ const router = useRouter()
 const goBack = () => {
   router.push({ name: 'Home' })
 }
-const changeMonth = () => {}
+const changeMonth = () => {
+  console.log('change month')
+}
 
 onMounted(() => {
   _data.value.dateStr = dateFormat(new Date(), 'yyyy-MM')
@@ -167,7 +174,7 @@ const userState = useUserState()
 const getBudget = async (params: any = {}) => {
   let param = {
     uid: userState.user.id,
-    dataStr: _data.value.dateStr,
+    dataStr: _data.value.dateStr
   }
   let res: any = await budgetMonthCost(param)
   let { data, msg, code } = res

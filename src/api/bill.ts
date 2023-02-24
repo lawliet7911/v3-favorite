@@ -2,10 +2,10 @@ import request from 'src/utils/request'
 import qs from 'qs'
 // 获取列表
 export function getBillList(data: any) {
-  let params = qs.stringify(data)
+  const params = qs.stringify(data)
   return request({
     url: '/api/bill/list' + (params ? '?' + params : ''),
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -14,7 +14,7 @@ export function addRecord(data: any) {
   return request({
     url: '/api/bill',
     method: 'post',
-    data: data,
+    data: data
   })
 }
 
@@ -23,7 +23,7 @@ export function updateRecord(data: any) {
   return request({
     url: `/api/bill/${data.id}`,
     method: 'put',
-    data: data,
+    data: data
   })
 }
 
@@ -31,7 +31,7 @@ export function updateRecord(data: any) {
 export function delBillRecord(id: string) {
   return request({
     url: `/api/bill/${id}`,
-    method: 'delete',
+    method: 'delete'
   })
 }
 
@@ -39,7 +39,7 @@ export function delBillRecord(id: string) {
 export function curMonthCost() {
   return request({
     url: `/api/bill/curMonthCost`,
-    method: 'GET',
+    method: 'GET'
   })
 }
 
@@ -48,7 +48,7 @@ export function monthChart(data: any) {
   return request({
     url: `/api/budget/monthChart`,
     method: 'GET',
-    params: data,
+    params: data
   })
 }
 
@@ -56,7 +56,7 @@ export function budgetMonthCost(data: any) {
   return request({
     url: `/api/budget/monthCost`,
     method: 'GET',
-    params: data,
+    params: data
   })
 }
 
@@ -64,6 +64,6 @@ export function addBudget(data: any) {
   return request({
     url: `/api/budget`,
     method: 'POST',
-    data: data,
+    data: data
   })
 }

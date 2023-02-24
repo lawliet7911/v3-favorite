@@ -8,17 +8,17 @@ interface BaseResponse {
 }
 // 获取全部
 export function getNotes(data: any) {
-  let params = qs.stringify(data)
+  const params = qs.stringify(data)
   return request({
     url: '/api/notebook/list' + (params ? '?' + params : ''),
-    method: 'get',
+    method: 'get'
   })
 }
 
 export function getNote(id: string | number) {
   return request({
     url: '/api/notebook/' + id,
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -27,15 +27,15 @@ export function saveNote(data: any) {
   return request({
     url: '/api/notebook',
     method: 'post',
-    data: data,
+    data: data
   })
 }
 // 编辑
-export function updateNote(data: any){
+export function updateNote(data: any) {
   return request({
     url: `/api/notebook/${data.id}`,
     method: 'put',
-    data: data,
+    data: data
   })
 }
 
@@ -43,6 +43,6 @@ export function updateNote(data: any){
 export function delNote(id: string | number) {
   return request({
     url: `/api/notebook/${id}`,
-    method: 'delete',
+    method: 'delete'
   })
 }

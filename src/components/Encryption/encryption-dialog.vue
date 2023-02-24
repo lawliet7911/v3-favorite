@@ -2,21 +2,28 @@
   <el-dialog
     width="500px"
     title="验证独立密码"
-    v-model="props.visible"
+    :model-value="props.visible"
     :before-close="beforeClose"
     :closeOnClickModal="false"
   >
     <el-form :model="_data.form" :rules="rules" ref="encryptionForm">
       <el-form-item label="密码" prop="pwd" label-width="100px">
-        <el-input v-model="_data.form.pwd" @change="resetValid" type="password" autocomplete="off"></el-input>
+        <el-input
+          v-model="_data.form.pwd"
+          @change="resetValid"
+          type="password"
+          autocomplete="off"
+        ></el-input>
       </el-form-item>
     </el-form>
     <div class="info">刷新或切换其他路由页面后需重新验证！</div>
     <div v-if="_data.tip" class="tips">{{ _data.tip }}</div>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="cancel">取 消</el-button>
-      <el-button type="primary" @click="login(encryptionForm)">确 定</el-button>
-    </div>
+    <template v-slot:footer>
+      <div class="dialog-footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="login(encryptionForm)">确 定</el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -24,11 +31,11 @@
 import { ref, reactive } from 'vue'
 import type { FormRules, FormInstance } from 'element-plus'
 import { checkEncryption } from 'src/api/user'
-import { useUserState } from 'src/store';
+import { useUserState } from 'src/store'
 
 const userState = useUserState()
 const props = defineProps({
-  visible: Boolean,
+  visible: Boolean
 })
 
 interface formObject {
@@ -40,7 +47,7 @@ interface encryption {
   tip: string
 }
 const _form: formObject = {
-  pwd: '',
+  pwd: ''
 }
 
 const emit = defineEmits(['close', 'validSuccess'])
@@ -48,13 +55,13 @@ const emit = defineEmits(['close', 'validSuccess'])
 let _data = ref<encryption>({
   visible: false,
   form: _form,
-  tip: '',
+  tip: ''
 })
 
 const encryptionForm: any = ref<FormInstance>()
 
 const rules: FormRules = {
-  pws: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  pws: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 const beforeClose = () => {
   emit('close')
@@ -71,7 +78,7 @@ const login = (formEl: FormInstance): void => {
     if (!flag) return
     let params = {
       pwd: _data.value.form.pwd,
-      uid: userState.user.id,
+      uid: userState.user.id
     }
     let data = await checkEncryption(params)
     if (data.data) {

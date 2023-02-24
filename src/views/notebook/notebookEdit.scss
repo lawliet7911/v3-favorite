@@ -57,11 +57,13 @@
         font-size: 18px;
       }
     }
+
     .note-items {
       @include scrollBar();
       overflow-y: scroll;
       height: calc(100% - 65px);
       flex: 1;
+
       .note-item {
         height: 50px;
         box-sizing: border-box;

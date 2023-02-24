@@ -10,7 +10,7 @@ import { CHAR_MONTH_OPTIONS } from '../enums'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps({
-  dateStr: String,
+  dateStr: String
 })
 let chartId = ref<string>('')
 
@@ -36,7 +36,6 @@ const getData = async () => {
   }
   if (chart) chart.dispose()
   let dom = document.getElementById(chartId.value)
-  debugger
   chart = echarts.init(dom as any)
   // 绘制图表
   chart.setOption(CHAR_MONTH_OPTIONS as any)

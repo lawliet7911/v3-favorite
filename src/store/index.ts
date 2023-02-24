@@ -6,7 +6,7 @@ import router from 'src/router'
 export const useUserState = defineStore('user', {
   state: () => {
     return {
-      user: storage.get('user') || {},
+      user: storage.get('user') || {}
     }
   },
   actions: {
@@ -18,6 +18,6 @@ export const useUserState = defineStore('user', {
       storage.remove('user')
       storage.remove('user-expTime')
       router.push({ name: 'Login', params: { logout: 1 } })
-    },
-  },
+    }
+  }
 })

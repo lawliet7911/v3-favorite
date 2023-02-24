@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue'
 import { FormInstance, FormRules } from 'element-plus'
@@ -16,7 +17,7 @@ let route = useRoute()
 
 let rules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
 let loginObj = ref({
@@ -24,7 +25,7 @@ let loginObj = ref({
   remember: false,
   logoutAnimation: false,
   logout: false,
-  exp: 15,
+  exp: 15
 })
 
 onMounted(() => {
@@ -50,7 +51,7 @@ interface loginModel {
 
 let loginData: loginModel = {
   username: '',
-  pwd: '',
+  pwd: ''
 }
 
 let form = ref(loginData)
@@ -83,11 +84,17 @@ const login = (formEl: FormInstance): void => {
         loginObj.animation ? 'success' : '',
         loginObj.logout ? 'logout' : '',
         loginObj.logoutAnimation ? 'logout-anim' : '',
-        'login-form',
+        'login-form'
       ]"
     >
       <div class="title" :class="{ out: loginObj.animation }">登 录</div>
-      <el-form :model="form" class="form" :class="{ out: loginObj.animation }" :rules="rules" ref="loginForm">
+      <el-form
+        :model="form"
+        class="form"
+        :class="{ out: loginObj.animation }"
+        :rules="rules"
+        ref="loginForm"
+      >
         <el-form-item class="form-item" label="用户名" prop="username" label-width="80px">
           <el-input v-model.trim="form.username" autocomplete="off"></el-input>
         </el-form-item>
@@ -96,13 +103,20 @@ const login = (formEl: FormInstance): void => {
         </el-form-item>
         <el-form-item class="form-item">
           <el-checkbox v-model="loginObj.remember">记住密码</el-checkbox>
-          <el-select class="sel-exp" placeholder="保存天数" v-show="loginObj.remember" v-model="loginObj.exp">
+          <el-select
+            class="sel-exp"
+            placeholder="保存天数"
+            v-show="loginObj.remember"
+            v-model="loginObj.exp"
+          >
             <el-option label="15天" :value="15"></el-option>
             <el-option label="30天" :value="30"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <div class="login-btn" :class="{ out: loginObj.animation }" @click="login(loginForm)">确 定</div>
+      <div class="login-btn" :class="{ out: loginObj.animation }" @click="login(loginForm)">
+        确 定
+      </div>
       <!-- <div class="tte" @click="toggleDark">12313</div> -->
     </div>
     <a class="link" href="https://beian.miit.gov.cn/">备案号：鄂ICP备2022001970号-1</a>
@@ -112,7 +126,7 @@ const login = (formEl: FormInstance): void => {
 <style lang="scss" scoped>
 @import './login.scss';
 .link {
-  position:absolute;
+  position: absolute;
   bottom: 20px;
 }
 </style>

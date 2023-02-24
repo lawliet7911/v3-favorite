@@ -3,18 +3,18 @@ import { createRouter, createWebHashHistory, RouteRecordRaw, NavigationGuardNext
 import Home from 'src/views/Home.vue'
 import Login from 'src/views/login/login.vue'
 import { useUserState } from 'src/store/index'
-import BasicLayout from 'src/layout/layout.vue'
+import BasicLayout from 'src/layout/BasicLayout.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: Home
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: Login
   },
   {
     path: '/notebook',
@@ -24,14 +24,14 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'edit/:id?',
         name: 'NotebookEdit',
-        component: () => import('src/views/notebook/notebookEdit.vue'),
+        component: () => import('src/views/notebook/notebookEdit.vue')
       },
       {
         path: 'see/:id',
         name: 'NotebookWatch',
-        component: () => import('src/views/notebook/notebook.vue'),
-      },
-    ],
+        component: () => import('src/views/notebook/notebookWatch.vue')
+      }
+    ]
   },
   {
     // markdown笔记
@@ -42,19 +42,19 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'watch',
         name: 'MyBill',
-        component: () => import('src/views/Bill/bill.vue'),
-      },
-    ],
-  },
+        component: () => import('src/views/Bill/bill.vue')
+      }
+    ]
+  }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
 })
 
 router.beforeEach((to, from, next: NavigationGuardNext) => {
-  let userState = useUserState();
+  const userState = useUserState()
   // 未登录访问其他页面
   if (to.name != 'Login') {
     if (userState.user?.id) {

@@ -4,16 +4,22 @@
     <div class="left-list" v-loading="_data.listLoading">
       <div class="left-top">
         <div class="tp-btn">
-          <span class="back" @click="back">
-            <el-icon :size="18"><ArrowLeft /></el-icon>
-            <span>返回</span></span
-          >
+          <div class="back" @click="back">
+            <el-icon :size="18">
+              <ArrowLeft />
+            </el-icon>
+            <span>返回</span>
+          </div>
           <div class="icons">
             <span @click="getNoteList" title="刷新列表" class="icon-refresh">
-              <el-icon :size="18"><RefreshRight /></el-icon>
+              <el-icon :size="18">
+                <RefreshRight />
+              </el-icon>
             </span>
             <span @click="newNote" title="新建文档" class="icon-refresh">
-              <el-icon :size="18"><DocumentAdd /></el-icon>
+              <el-icon :size="18">
+                <DocumentAdd />
+              </el-icon>
             </span>
             <span class="nsfw" @click="nsfw">
               <el-icon :size="18">
@@ -36,10 +42,18 @@
           @click="chooseItem(note)"
           v-for="note in noteList"
           :v-id="note.id"
+          :key="note.id"
           :v-title="note.title"
           class="note-item"
         >
-          <el-icon @click.stop="itemDel(note)" v-if="note.delVisible" class="note-delete" :size="14"><Close /></el-icon>
+          <el-icon
+            @click.stop="itemDel(note)"
+            v-if="note.delVisible"
+            class="note-delete"
+            :size="14"
+          >
+            <Close />
+          </el-icon>
           <p :title="note.title" class="_title">{{ note.title || '未命名' }}</p>
           <p class="_time">{{ dateFormat(note.time) }}</p>
         </div>
@@ -57,7 +71,9 @@
       >
         <template #defFooters>
           <span v-show="_data.currentChoose.id" @click="handleDelete" class="footer-delete">
-            <el-icon :size="14"><Delete /></el-icon>
+            <el-icon :size="14">
+              <Delete />
+            </el-icon>
           </span>
         </template>
       </md-editor>
@@ -77,7 +93,9 @@
             content="私密保存将会关联账号，其他人无法编辑查看；非私密保存为共享笔记。"
             placement="right"
           >
-            <el-icon :size="18"><QuestionFilled class="question" /></el-icon>
+            <el-icon :size="18">
+              <QuestionFilled class="question" />
+            </el-icon>
           </el-tooltip>
         </el-form-item>
         <el-form-item v-if="_data.user.id" label="加密保存" label-width="140px">
@@ -88,23 +106,27 @@
             content="加密保存为账户独有内容，且需要额外独立密码验证通过之后才可查看访问。"
             placement="right"
           >
-            <el-icon :size="18"><QuestionFilled class="question" /></el-icon>
+            <el-icon :size="18">
+              <QuestionFilled class="question" />
+            </el-icon>
           </el-tooltip>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitSave">确 定</el-button>
-      </div>
+      <template v-slot:footer>
+        <div class="dialog-footer">
+          <el-button @click="cancel">取 消</el-button>
+          <el-button type="primary" @click="submitSave">确 定</el-button>
+        </div>
+      </template>
     </el-dialog>
 
     <!-- 验证独立密码 -->
-    <encryption
+    <encryption-dialog
       v-if="_data.encryptionFlag"
       @close="closeEncryption"
       :visible="_data.encryptionFlag"
       @validSuccess="validSuccess"
-    ></encryption>
+    ></encryption-dialog>
 
     <!-- 右键菜单 -->
   </div>
@@ -177,7 +199,7 @@ let _data = ref<noteBookData>({
   encryptionStatus: 0,
   encryptionFlag: false,
   currentChoose: <noteItem>{},
-  toolbarsExclude: ['github'],
+  toolbarsExclude: ['github']
 })
 
 const _d = _data.value
@@ -200,14 +222,14 @@ const cancel = () => {
   _d.formData = {
     name: '',
     secret: false,
-    encryption: false,
+    encryption: false
   }
 }
 
 const getNoteList = async () => {
   _d.listLoading = true
   let params = {
-    uid: _d.user.id,
+    uid: _d.user.id
   }
   let { data } = await getNotes(params)
   _d.listLoading = false
@@ -237,7 +259,7 @@ const submitSave = () => {
     time: dateFormat(new Date()),
     uid: null,
     encryption: 0,
-    id: undefined,
+    id: undefined
   }
 
   // 判断是否加密/私密
@@ -263,7 +285,7 @@ const submitEdit = async (params: any) => {
   if (res.code == 200) {
     ElNotification.success({
       title: '消息',
-      message: '编辑成功',
+      message: '编辑成功'
     })
     _d.textOrigin = _d.text
   }
@@ -277,7 +299,7 @@ const subSave = async (params: any) => {
   if (res.code == 200) {
     ElNotification.success({
       title: '消息',
-      message: '保存成功',
+      message: '保存成功'
     })
     _d.currentChoose = res.data
     _d.textOrigin = _d.text
@@ -290,12 +312,10 @@ const handleDelete = () => {
   ElMessageBox.confirm(`此操作将永久删除笔记《${_d.currentChoose.title}》, 是否继续?`, '删除笔记', {
     confirmButtonText: '删除',
     cancelButtonText: '取消',
-    type: 'warning',
+    type: 'warning'
+  }).then(() => {
+    submitDelete()
   })
-    .then(() => {
-      submitDelete()
-    })
-    .catch(() => {})
 }
 
 const submitDelete = async (id?: string) => {
@@ -303,7 +323,7 @@ const submitDelete = async (id?: string) => {
   let data = await delNote(did)
   ElNotification.success({
     title: '消息',
-    message: '删除成功',
+    message: '删除成功'
   })
   if (id == _d.currentChoose.id || !_d.currentChoose.id) {
     _d.currentChoose = {
@@ -311,7 +331,7 @@ const submitDelete = async (id?: string) => {
       title: '',
       time: '',
       encryption: 0,
-      delVisible: false,
+      delVisible: false
     }
     _d.text = ''
   }
@@ -323,7 +343,7 @@ const chooseItem = (note: noteItem) => {
     ElMessageBox.confirm(`笔记有修改未保存, 是否离开?`, '提示', {
       confirmButtonText: '保存笔记',
       cancelButtonText: '取消修改',
-      type: 'warning',
+      type: 'warning'
     })
       .then(async () => {
         await submitSave()
@@ -333,7 +353,7 @@ const chooseItem = (note: noteItem) => {
         goAhead()
       })
     return
-  }else if(_d.textOrigin !== '' && note.id === _d.currentChoose.id) {
+  } else if (_d.textOrigin !== '' && note.id === _d.currentChoose.id) {
     return
   }
   function goAhead() {
@@ -344,7 +364,7 @@ const chooseItem = (note: noteItem) => {
   goAhead()
 }
 
-const onUploadImg = async (files: Array<File>, callback: Function | any) => {
+const onUploadImg = async (files: Array<File>, callback: any) => {
   const res = await Promise.all(
     files.map((file) => {
       return new Promise((rev, rej) => {
@@ -375,15 +395,17 @@ const itemLeave = (note: noteItem) => {
 }
 
 const itemDel = (note: noteItem) => {
-  ElMessageBox.confirm(`此操作将永久删除笔记《${note.title?note.title:'未命名'}》, 是否继续?`, '删除笔记', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
-    type: 'warning',
+  ElMessageBox.confirm(
+    `此操作将永久删除笔记《${note.title ? note.title : '未命名'}》, 是否继续?`,
+    '删除笔记',
+    {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  ).then(() => {
+    submitDelete(note.id)
   })
-    .then(() => {
-      submitDelete(note.id)
-    })
-    .catch(() => {})
 }
 
 const newNote = (): void => {
@@ -392,7 +414,7 @@ const newNote = (): void => {
     title: '',
     time: '',
     encryption: 0,
-    delVisible: false,
+    delVisible: false
   }
   _d.text = ''
 }

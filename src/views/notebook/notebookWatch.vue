@@ -7,7 +7,7 @@ import { getNote } from 'src/api/notebook'
 
 let text = ref('')
 let _text = ref('')
-let params:any = useRoute().params
+let params: any = useRoute().params
 let encryptionFlag = ref(false)
 let hasValid = ref(false)
 
@@ -38,12 +38,12 @@ onMounted(() => {
 <template>
   <md-editor v-model="text" :previewOnly="true"> </md-editor>
   <!-- 验证独立密码 -->
-  <encryption
+  <encryption-dialog
     v-if="encryptionFlag"
     @close="closeEncryption"
     :visible="encryptionFlag"
     @validSuccess="validSuccess"
-  ></encryption>
+  ></encryption-dialog>
 </template>
 
 <style lang="scss" scoped>

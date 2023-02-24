@@ -10,7 +10,7 @@ import { CHAR_MONTH_OPTIONS } from '../enums'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps({
-  dateStr: String,
+  dateStr: String
 })
 let chartId = ref<string>('')
 chartId.value = Math.ceil(Math.random() * 100000000000000).toString()

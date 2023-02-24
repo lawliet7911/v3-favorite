@@ -1,4 +1,4 @@
-let storage = {
+const storage = {
   /**
    * 存
    * @param key 存取的localStorage的键
@@ -20,14 +20,13 @@ let storage = {
    * @param key 存取的localStorage的键
    */
   get(key: string) {
-    let data: string = localStorage.getItem(key) || ''
+    const data: string = localStorage.getItem(key) || ''
     let re
     try {
       re = JSON.parse(data)
-    } catch (error) {
-      re = data
-    } finally {
       return re
+    } catch (error) {
+      return data
     }
   },
   /**
@@ -37,7 +36,7 @@ let storage = {
   remove(key: string) {
     localStorage.removeItem(key)
     localStorage.removeItem(key + '-expTime')
-  },
+  }
 }
 
 export default storage

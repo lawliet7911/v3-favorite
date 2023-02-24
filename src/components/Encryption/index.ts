@@ -1,7 +1,7 @@
-import Encryption from './index.vue'
+import Encryption from './encryption-dialog.vue'
 
 export default {
   install(app: any) {
-    app.component('encryption', Encryption)
-  },
+    app.component('encryption-dialog', Encryption)
+  }
 }
