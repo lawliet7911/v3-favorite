@@ -1,7 +1,7 @@
 <template>
   <div class="notebook">
     <!-- 列表区 -->
-    <div class="left-list" v-loading="_data.listLoading">
+    <div class="left-list">
       <div class="left-top">
         <div class="tp-btn">
           <div class="back" @click="back">
@@ -45,28 +45,15 @@
           {{ sort.name }}
         </div>
       </div>
-      <div class="note-items">
-        <div
-          @mouseenter="itemEnter(note)"
-          @mouseleave="itemLeave(note)"
-          @click="chooseItem(note)"
-          v-for="note in noteList"
-          :v-id="note.id"
-          :key="note.id"
-          :v-title="note.title"
-          class="note-item"
-        >
-          <el-icon
-            @click.stop="itemDel(note)"
-            v-if="note.delVisible"
-            class="note-delete"
-            :size="14"
-          >
-            <Close />
-          </el-icon>
-          <p :title="note.title" class="_title">{{ note.title || '未命名' }}</p>
-          <p class="_time">{{ dateFormat(note.time) }}</p>
-        </div>
+      <!-- note列表 -->
+      <div class="list-container">
+        <template v-if="_data.sortType === 0">
+          <noteList ref="noteListRef" @choose="chooseItem" :nsfw="_data.nsfwVisible"
+        /></template>
+        <template v-else>
+          <!-- 收藏夹列表 -->
+          <collection-list @choose="chooseItem" />
+        </template>
       </div>
     </div>
 
@@ -143,59 +130,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { ElNotification, ElMessageBox } from 'element-plus'
-import { ToolbarNames, Footers } from 'md-editor-v3'
+import { Footers } from 'md-editor-v3'
 import { dateFormat } from 'src/utils/date'
+import noteList from './components/noteList.vue'
+import collectionList from './components/collectionList.vue'
 
-import { getNotes, getNote, delNote, saveNote, updateNote } from 'src/api/notebook'
+import { getNote, saveNote, updateNote } from 'src/api/notebook'
 import { upload } from 'src/api/common'
+import { getCollection } from 'src/api/collection'
 import storage from 'src/utils/storage'
 // import { objectToString } from 'src/utils/common'
 import { useUserState } from 'src/store'
-
+import { collectionItem, noteBookData, noteItem, saveModel } from './types'
 const router = useRouter()
 
 const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
-
-interface noteItem {
-  id: string
-  title: string
-  time: string
-  encryption: string | number
-  delVisible: boolean
-}
-
-const noteList = computed<noteItem[]>(() => {
-  let nsfw = _d.nsfwVisible
-  if (nsfw) return _d.noteList
-  else
-    return _d.noteList.filter((o) => {
-      return o.encryption !== '1'
-    })
-})
-
-interface noteBookData {
-  nsfwVisible: boolean
-  noteListF: noteItem[]
-  noteList: noteItem[]
-  dialogVisible: boolean
-  editLoading: boolean
-  listLoading: boolean
-  formData: any
-  user: any
-  text: string // 转换md值
-  textOrigin: string
-  currentChoose: noteItem
-  encryptionStatus: number
-  encryptionFlag: boolean
-  sortType: number
-  toolbarsExclude: ToolbarNames[]
-}
-
+const noteListRef = ref()
 interface sortType {
   name: string
   value: number
@@ -227,6 +182,8 @@ let _data = ref<noteBookData>({
   encryptionFlag: false,
   currentChoose: <noteItem>{},
   sortType: 0,
+  currentCid: '',
+  collections: [],
   toolbarsExclude: ['github']
 })
 
@@ -236,7 +193,6 @@ const userState = useUserState()
 onMounted(async () => {
   let user = userState.user //storage.get("user")
   _d.user = user
-  getNoteList()
 })
 
 const nsfw = () => {
@@ -255,19 +211,7 @@ const cancel = () => {
 }
 
 const getNoteList = async () => {
-  _d.listLoading = true
-  let params = getNoteListParams()
-  let { data } = await getNotes(params)
-  _d.listLoading = false
-  _d.noteList = data
-}
-
-const getNoteListParams = () => {
-  let params = {
-    uid: _d.user.id,
-    showCollection: _d.sortType === 1 ? 1 : undefined
-  }
-  return params
+  noteListRef.value.getNoteList()
 }
 
 const save = () => {
@@ -275,14 +219,6 @@ const save = () => {
   _d.dialogVisible = true
 }
 
-interface saveModel {
-  title: string
-  text: string
-  time: string
-  uid: null | string
-  encryption: number | string
-  id: undefined | string | null
-}
 const submitSave = () => {
   let text = _d.text
   text = text.replace(/\n/g, '<br/>') // 解决\n存入数据库中再取出不显示问题
@@ -343,23 +279,17 @@ const subSave = async (params: any) => {
 }
 
 const handleDelete = () => {
-  ElMessageBox.confirm(`此操作将永久删除笔记《${_d.currentChoose.title}》, 是否继续?`, '删除笔记', {
-    confirmButtonText: '删除',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(() => {
-    submitDelete()
-  })
+  noteListRef.value.itemDel(_d.currentChoose)
 }
 
-const submitDelete = async (id?: string) => {
-  let did: string = id ? id : _d.currentChoose.id
-  let data = await delNote(did)
-  ElNotification.success({
-    title: '消息',
-    message: '删除成功'
-  })
-  if (id == _d.currentChoose.id || !_d.currentChoose.id) {
+const handleSortTypeChange = async (type: number): Promise<void> => {
+  if (_d.sortType === type) return
+  _d.sortType = type
+}
+
+const chooseItem = (note: noteItem) => {
+  if (!note) {
+    _d.text = ''
     _d.currentChoose = {
       id: '',
       title: '',
@@ -367,18 +297,8 @@ const submitDelete = async (id?: string) => {
       encryption: 0,
       delVisible: false
     }
-    _d.text = ''
+    return
   }
-  getNoteList()
-}
-
-const handleSortTypeChange = (type: number): void => {
-  if (_d.sortType === type) return
-  _d.sortType = type
-  getNoteList()
-}
-
-const chooseItem = (note: noteItem) => {
   if (_d.textOrigin !== '' && _d.textOrigin !== _d.text) {
     ElMessageBox.confirm(`笔记有修改未保存, 是否离开?`, '提示', {
       confirmButtonText: '保存笔记',
@@ -424,28 +344,6 @@ const onUploadImg = async (files: Array<File>, callback: any) => {
     })
   )
   callback(res.map((item: any) => item.data.url))
-}
-
-const itemEnter = (note: noteItem) => {
-  note.delVisible = true
-}
-
-const itemLeave = (note: noteItem) => {
-  note.delVisible = false
-}
-
-const itemDel = (note: noteItem) => {
-  ElMessageBox.confirm(
-    `此操作将永久删除笔记《${note.title ? note.title : '未命名'}》, 是否继续?`,
-    '删除笔记',
-    {
-      confirmButtonText: '删除',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }
-  ).then(() => {
-    submitDelete(note.id)
-  })
 }
 
 const newNote = (): void => {

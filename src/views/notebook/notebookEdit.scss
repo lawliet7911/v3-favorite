@@ -71,6 +71,7 @@
         height: 100%;
         cursor: pointer;
         position: relative;
+
         &.choose::after {
           content: '';
           display: inline-block;
@@ -85,50 +86,10 @@
       }
     }
 
-    .note-items {
-      @include scrollBar();
-      overflow-y: scroll;
+    .list-container {
       height: calc(100% - 88px);
-      flex: 1;
-
-      .note-item {
-        height: 50px;
-        box-sizing: border-box;
-        padding: 10px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-        position: relative;
-
-        .note-delete {
-          position: absolute;
-          top: 6px;
-          right: 10px;
-          cursor: pointer;
-        }
-
-        &:hover {
-          transition: all ease 0.4s;
-          background: whitesmoke;
-        }
-
-        p {
-          margin: 0;
-        }
-
-        ._title {
-          font-size: 14px;
-          max-width: 200px;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          word-break: keep-all;
-          margin-bottom: 5px;
-        }
-
-        ._time {
-          font-size: 12px;
-          text-align: right;
-        }
-      }
+      padding-top: 5px;
+      box-sizing: border-box;
     }
 
     width: 230px;
@@ -148,6 +109,9 @@
       height: 100%;
     }
   }
+}
+
+.note-collections {
 }
 
 .none {
