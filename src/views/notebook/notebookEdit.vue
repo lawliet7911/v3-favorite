@@ -82,7 +82,7 @@
         <el-form-item label="输入笔记名称" label-width="140px">
           <el-input v-model="_data.formData.name"></el-input>
         </el-form-item>
-        <el-form-item v-if="_data.user.id" label="私密保存" label-width="140px">
+        <el-form-item v-if="_data.user.id" label="私有" label-width="140px">
           <el-switch v-model="_data.formData.secret"></el-switch>
           <el-tooltip
             class="item"
@@ -142,7 +142,6 @@ import collectionList from './components/collectionList.vue'
 
 import { getNote, saveNote, updateNote } from 'src/api/notebook'
 import { upload } from 'src/api/common'
-import { getCollection } from 'src/api/collection'
 import storage from 'src/utils/storage'
 // import { objectToString } from 'src/utils/common'
 import { useUserState } from 'src/store'
@@ -174,7 +173,9 @@ let _data = ref<noteBookData>({
   dialogVisible: false,
   editLoading: false,
   listLoading: false,
-  formData: {},
+  formData: {
+    secret: true
+  },
   user: {},
   text: '',
   textOrigin: '',
@@ -205,7 +206,7 @@ const cancel = () => {
   _d.dialogVisible = false
   _d.formData = {
     name: '',
-    secret: false,
+    secret: true,
     encryption: false
   }
 }

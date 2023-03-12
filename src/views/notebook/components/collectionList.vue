@@ -17,7 +17,7 @@
           </div>
         </template>
         <!-- content -->
-        <note-list @choose="chooseItem" v-if="activeName === collect.id" :cid="activeName" />
+        <note-list @choose="chooseItem" v-if="activeName === collect.id" :cid="collect.id" />
       </el-collapse-item>
     </el-collapse>
   </div>

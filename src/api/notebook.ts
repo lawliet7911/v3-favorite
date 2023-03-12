@@ -46,3 +46,11 @@ export function delNote(id: string | number) {
     method: 'delete'
   })
 }
+
+export function getNoteByCollection(cid: string) {
+  const params = qs.stringify({ cid })
+  return request({
+    url: `/api/notebook/findByCollection` + (params ? '?' + params : ''),
+    method: 'get'
+  })
+}

@@ -28,7 +28,7 @@
 
   <el-dialog title="收藏" width="420px" top="37vh" v-model="collectionVisible">
     <el-form :model="collectForm">
-      <el-form-item label="收藏夹" label-width="140px">
+      <el-form-item label="收藏夹" label-width="80px">
         <el-select v-model="collectForm.cid" placeholder="请选择收藏夹">
           <el-option label="默认" value="-1">默认</el-option>
           <el-option
@@ -38,7 +38,33 @@
             :value="collect.id"
           ></el-option>
         </el-select>
+        <el-button class="add-collection-button" @click="addNewVisible = true">新增</el-button>
       </el-form-item>
+      <template v-if="addNewVisible">
+        <h2>新增</h2>
+        <el-form-item label="名称" label-width="80px">
+          <el-input
+            class="add-collection-new-input"
+            placeholder="收藏夹名"
+            v-model="collectForm.newName"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="描述" label-width="80px">
+          <el-input
+            class="add-collection-new-input"
+            placeholder="收藏夹描述"
+            v-model="collectForm.description"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="私密" label-width="80px">
+          <el-switch v-model="collectForm.secret"></el-switch>
+        </el-form-item>
+
+        <el-button class="add-collection-button" type="primary" @click="addNewCollection"
+          >保 存</el-button
+        >
+      </template>
     </el-form>
     <template v-slot:footer>
       <div class="dialog-footer">
@@ -51,9 +77,9 @@
 
 <script setup lang="ts">
 import { ElMessageBox, ElNotification } from 'element-plus'
-import { delNote, getNotes } from 'src/api/notebook'
+import { delNote, getNoteByCollection, getNotes } from 'src/api/notebook'
 import { useUserState } from 'src/store'
-import { getCollection } from 'src/api/collection'
+import { favorite, getCollection, saveCollection } from 'src/api/collection'
 import { dateFormat } from 'src/utils/date'
 import { computed, onMounted, ref } from 'vue'
 import { collectionItem, noteItem } from '../types'
@@ -113,12 +139,18 @@ const getCollectionList = async () => {
 }
 
 const getNoteList = async () => {
-  console.log('trigger getNoteList fn')
   _data.value.listLoading = true
   let params = getNoteListParams()
-  let { data } = await getNotes(params)
+  let _list = []
+  if (params.cid) {
+    let { data } = await getNoteByCollection(params.cid)
+    _list = data
+  } else {
+    let { data } = await getNotes(params)
+    _list = data
+  }
   _data.value.listLoading = false
-  noteListRef.value = data
+  noteListRef.value = _list
 }
 
 const itemDel = (note: noteItem) => {
@@ -165,10 +197,16 @@ const handleCollectClick = (note: noteItem) => {
 // 收藏
 interface collectFormModel {
   cid: string
+  newName: string
+  description: string
+  secret: '0' | '1'
 }
 const collectionVisible = ref<boolean>(false)
 const collectForm = ref<collectFormModel>({
-  cid: ''
+  cid: '',
+  newName: '',
+  description: '',
+  secret: '0'
 })
 const collectList = ref<collectionItem[]>([])
 
@@ -177,8 +215,38 @@ const cancelSave = () => {
   collectionVisible.value = false
 }
 
-const submitSave = () => {
-  console.log('todo')
+const addNewVisible = ref<boolean>(false)
+
+const addNewCollection = async () => {
+  let params = {
+    name: collectForm.value.newName,
+    description: collectForm.value.description,
+    secret: collectForm.value.secret,
+    uid: userState.user?.id
+  }
+  let response = await saveCollection(params)
+  getCollectionList()
+  addNewVisible.value = false
+  collectForm.value = {
+    cid: '',
+    newName: '',
+    description: '',
+    secret: '0'
+  }
+}
+
+const submitSave = async () => {
+  let params = {
+    collectionId: collectForm.value.cid,
+    notebookId: currentChoose?.id
+  }
+  let { data } = await favorite(params)
+  ElNotification.success({
+    title: '消息',
+    message: '收藏成功'
+  })
+  collectionVisible.value = false
+  getNoteList()
 }
 
 defineExpose({
@@ -202,6 +270,7 @@ defineExpose({
     border-radius: 20px;
   }
 }
+
 .note-items {
   @include scrollBar();
   overflow-y: scroll;
@@ -216,11 +285,13 @@ defineExpose({
     cursor: pointer;
     border-bottom: 1px solid #eee;
     position: relative;
+
     @mixin ItemIcon {
       position: absolute;
       top: 6px;
       cursor: pointer;
     }
+
     .note-delete {
       @include ItemIcon();
       right: 10px;
@@ -254,5 +325,12 @@ defineExpose({
       text-align: right;
     }
   }
+}
+.add-collection-button {
+  margin-left: 10px;
+}
+
+.add-collection-new-input {
+  width: 200px;
 }
 </style>
