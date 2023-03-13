@@ -26,7 +26,7 @@ jobs:
       - name: Cache pnpm-store
         uses: actions/cache@v3.3.1
         with:
-          path: node_modules
+          path: node_modules/
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
@@ -36,6 +36,7 @@ jobs:
         env:
           SOURCE: dist/
           SCRIPT_BEFORE: rm -rf /www/wwwroot/https/assets/
+          ARGS: -rlgoDzvc -i --ignore-times
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           REMOTE_HOST: ${{ secrets.HOST }}
