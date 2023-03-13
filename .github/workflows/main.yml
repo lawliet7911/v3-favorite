@@ -39,4 +39,4 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          TARGET: ${{ secrets.REMOTE_PATH }}
