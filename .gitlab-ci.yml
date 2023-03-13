@@ -6,3 +6,6 @@ build:
   artifacts:
     paths:
       - dist/
+
+variables:
+  PATH: "$PATH:/usr/local/lib/node_modules/pnpm/bin"
