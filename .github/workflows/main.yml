@@ -23,9 +23,18 @@ jobs:
       - name: Build
         run: pnpm run build
         
+      - name: Cache pnpm-store
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+        
       - name: Deploy
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
+          EXCLUDE: "/dist/, /node_modules/"
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           REMOTE_HOST: ${{ secrets.HOST }}
