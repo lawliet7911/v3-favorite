@@ -1,11 +1,8 @@
 build:
   stage: build
   script:
-    - pnpm install
+    - npm install
     - npm run build
   artifacts:
     paths:
       - dist/
-
-variables:
-  PATH: "$PATH:/usr/local/lib/node_modules/pnpm/bin"
