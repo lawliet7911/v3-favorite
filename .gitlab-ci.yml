@@ -6,6 +6,7 @@ cache:
 
 stages:
   - build
+  - deploy
 
 build:
   stage: build
