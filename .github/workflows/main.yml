@@ -24,14 +24,6 @@ jobs:
       - name: Build
         run: npm run build
         
-      - name: Cache node_modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-
       - name: Deploy
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
