@@ -15,3 +15,8 @@ build:
   artifacts:
     paths:
       - dist/
+
+deploy:
+  stage: deploy
+  script:
+    - rsync -avz -e ssh dist/ user@localhost:/www/wwwroot/https/
