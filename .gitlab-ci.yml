@@ -1,7 +1,7 @@
 build:
   stage: build
   script:
-    - npm install
+    - pnpm install
     - npm run build
   artifacts:
     paths:
