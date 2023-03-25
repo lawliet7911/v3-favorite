@@ -4,15 +4,14 @@ import { useRoute } from 'vue-router'
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { getNote } from 'src/api/notebook'
-
-let text = ref('')
-let _text = ref('')
-let params: any = useRoute().params
-let encryptionFlag = ref(false)
-let hasValid = ref(false)
+const text = ref('')
+const _text = ref('')
+const params: any = useRoute().params
+const encryptionFlag = ref(false)
+const hasValid = ref(false)
 
 const getNoteDetail = async () => {
-  let { data } = await getNote(params.id)
+  const { data } = await getNote(params.id)
   if (data.encryption == 1 && !hasValid.value) {
     encryptionFlag.value = true
     _text.value = data.text.replace(/<br\/>/g, '\n')

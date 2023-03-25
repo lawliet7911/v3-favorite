@@ -12,11 +12,9 @@
             <span :title="collect.name + `: ` + collect.description" class="name">{{
               collect.name
             }}</span>
-            <!-- todo 需要新建一个表 tb_user_collection关系表 一对多 -->
             <!-- <p class="summary">总计<span class="num">10</span>篇</p> -->
           </div>
         </template>
-        <!-- content -->
         <note-list @choose="chooseItem" v-if="activeName === collect.id" :cid="collect.id" />
       </el-collapse-item>
     </el-collapse>
@@ -32,7 +30,6 @@ import noteList from './noteList.vue'
 
 const activeName = ref('')
 const userState = useUserState()
-const _data = ref({})
 const collections = ref<collectionItem[]>([])
 const emit = defineEmits(['choose'])
 onMounted(() => {
@@ -40,7 +37,7 @@ onMounted(() => {
 })
 
 const getCollectionList = async () => {
-  let { data } = await getCollection({
+  const { data } = await getCollection({
     uid: userState.user?.id
   })
   collections.value = data as collectionItem[]

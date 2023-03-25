@@ -62,63 +62,57 @@ const CHAR_MONTH_OPTIONS = {
       type: 'line',
       data: [],
       lineStyle: {
-        normal: {
-          width: 3,
-          color: {
-            type: 'linear',
+        width: 3,
+        color: {
+          type: 'linear',
 
-            colorStops: [
-              {
-                offset: 0,
-                color: '#F6D06F' // 0% 处的颜色
-              },
-              {
-                offset: 0.4,
-                color: '#F9A589' // 100% 处的颜色
-              },
-              {
-                offset: 1,
-                color: '#F9A589' // 100% 处的颜色
-              }
-            ],
-            globalCoord: false // 缺省为 false
-          },
-          shadowColor: 'rgba(249,165,137, 0.5)',
-          shadowBlur: 10,
-          shadowOffsetY: 7
-        }
+          colorStops: [
+            {
+              offset: 0,
+              color: '#F6D06F' // 0% 处的颜色
+            },
+            {
+              offset: 0.4,
+              color: '#F9A589' // 100% 处的颜色
+            },
+            {
+              offset: 1,
+              color: '#F9A589' // 100% 处的颜色
+            }
+          ],
+          globalCoord: false // 缺省为 false
+        },
+        shadowColor: 'rgba(249,165,137, 0.5)',
+        shadowBlur: 10,
+        shadowOffsetY: 7
       },
       areaStyle: {
-        normal: {
-          color: new echarts.graphic.LinearGradient(
-            0,
-            0,
-            0,
-            1,
-            [
-              {
-                offset: 0,
-                color: 'rgba(249,165,137,0.5)'
-              },
-              {
-                offset: 0.5,
-                color: 'rgba(249,165,137,.3)'
-              },
-              {
-                offset: 1,
-                color: 'rgba(249,165,137,0)'
-              }
-            ],
-            false
-          )
-        }
+        color: new echarts.graphic.LinearGradient(
+          0,
+          0,
+          0,
+          1,
+          [
+            {
+              offset: 0,
+              color: 'rgba(249,165,137,0.5)'
+            },
+            {
+              offset: 0.5,
+              color: 'rgba(249,165,137,.3)'
+            },
+            {
+              offset: 1,
+              color: 'rgba(249,165,137,0)'
+            }
+          ],
+          false
+        )
       },
       itemStyle: {
-        normal: {
-          color: '#F6D06F',
-          borderWidth: 10,
-          borderColor: '#F6D06F'
-        }
+        color: '#F6D06F',
+        borderWidth: 10,
+        borderColor: '#F6D06F'
       },
       smooth: true
     },
@@ -128,13 +122,11 @@ const CHAR_MONTH_OPTIONS = {
       symbol: 'circle',
       symbolSize: 8,
       itemStyle: {
-        normal: {
-          type: 'dashed',
+        type: 'dashed',
+        color: 'rgba(245, 61, 95, 1)',
+        lineStyle: {
           color: 'rgba(245, 61, 95, 1)',
-          lineStyle: {
-            color: 'rgba(245, 61, 95, 1)',
-            width: 3
-          }
+          width: 3
         }
       },
       markLine: {

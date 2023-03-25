@@ -6,18 +6,21 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-interface pageData {
+
+interface PageData {
   flag: boolean
   src: string
 }
 
-const _data = ref<pageData>({
+const DEFAULT_AVATAR_URL = 'https://s2.loli.net/2022/07/07/pn5x6EK7WzaAPGy.png'
+
+const pageData = ref<PageData>({
   flag: false,
   src: ''
 })
 
-const avatarSrc = computed((): string => {
-  return _data.value.src ? _data.value.src : 'https://s2.loli.net/2022/07/07/pn5x6EK7WzaAPGy.png'
+const avatarSrc = computed(() => {
+  return pageData.value.src || DEFAULT_AVATAR_URL
 })
 </script>
 

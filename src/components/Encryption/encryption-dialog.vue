@@ -1,9 +1,9 @@
 <template>
   <el-dialog
-    width="500px"
     title="验证独立密码"
+    width="500px"
     :model-value="props.visible"
-    :before-close="beforeClose"
+    :before-close="cancel"
     :closeOnClickModal="false"
   >
     <el-form :model="_data.form" :rules="rules" ref="encryptionForm">
@@ -62,9 +62,6 @@ const encryptionForm: any = ref<FormInstance>()
 
 const rules: FormRules = {
   pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
-}
-const beforeClose = () => {
-  emit('close')
 }
 const cancel = () => {
   emit('close')

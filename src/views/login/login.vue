@@ -1,32 +1,71 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import { FormInstance, FormRules } from 'element-plus'
 import { checkPwd } from 'src/api/user'
 import storage from 'src/utils/storage'
 
 import { useRoute, useRouter } from 'vue-router'
 import { useUserState } from 'src/store'
-import { useDark, useToggle } from '@vueuse/core'
-
-const isDark = useDark()
+// import { useDark, useToggle } from '@vueuse/core'
+// const isDark = useDark()
 // const toggleDark = useToggle(isDark)
 
-let userState = useUserState()
-let route = useRoute()
+const userState = useUserState()
+const route = useRoute()
+const router = useRouter()
 
-let rules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+interface LoginObj {
+  animation: boolean
+  remember: boolean
+  logoutAnimation: boolean
+  logout: boolean
+  exp: number
 }
-
-let loginObj = ref({
+const loginObj: Ref<LoginObj> = ref({
   animation: false,
   remember: false,
   logoutAnimation: false,
   logout: false,
   exp: 15
 })
+
+interface LoginModel {
+  username: string
+  pwd: string
+}
+
+const loginData: LoginModel = {
+  username: '',
+  pwd: ''
+}
+
+const rules: FormRules = {
+  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+}
+
+const form: Ref<LoginModel> = ref(loginData)
+
+const loginForm: Ref<FormInstance | undefined> = ref()
+
+const login = async (): Promise<void> => {
+  const validateResult = await (loginForm.value as FormInstance).validate()
+  if (!validateResult) return
+  const { data } = await checkPwd(loginData)
+  if (data.length) {
+    const d = data[0]
+    delete d.pwd
+    userState.setUser(d)
+    if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp * 24)
+    else storage.set('user', d)
+    loginObj.value.animation = true
+    // 动画完成跳转
+    setTimeout(() => {
+      router.push({ name: 'Home' })
+    }, 700)
+  }
+}
 
 onMounted(() => {
   let { params } = route
@@ -41,40 +80,6 @@ onMounted(() => {
     }, 700)
   }
 })
-
-const loginForm: any = ref<FormInstance>()
-
-interface loginModel {
-  username: string
-  pwd: string
-}
-
-let loginData: loginModel = {
-  username: '',
-  pwd: ''
-}
-
-let form = ref(loginData)
-
-const router = useRouter()
-const login = (formEl: FormInstance): void => {
-  formEl.validate(async (flag: boolean) => {
-    if (!flag) return
-    let { data } = await checkPwd(loginData)
-    if (data.length) {
-      let d = data[0]
-      delete d.pwd
-      userState.setUser(d)
-      if (loginObj.value.remember) storage.set('user', d, loginObj.value.exp * 24)
-      else storage.set('user', d)
-      loginObj.value.animation = true
-      // 动画完成跳转
-      setTimeout(() => {
-        router.push({ name: 'Home' })
-      }, 700)
-    }
-  })
-}
 </script>
 
 <template>
@@ -114,9 +119,7 @@ const login = (formEl: FormInstance): void => {
           </el-select>
         </el-form-item>
       </el-form>
-      <div class="login-btn" :class="{ out: loginObj.animation }" @click="login(loginForm)">
-        确 定
-      </div>
+      <div class="login-btn" :class="{ out: loginObj.animation }" @click="login()">确 定</div>
       <!-- <div class="tte" @click="toggleDark">12313</div> -->
     </div>
     <a class="link" href="https://beian.miit.gov.cn/">备案号：鄂ICP备2022001970号-1</a>

@@ -1,4 +1,3 @@
-import { useStorage, useStorageAsync } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import storage from 'src/utils/storage'
 import router from 'src/router'
@@ -10,7 +9,7 @@ export const useUserState = defineStore('user', {
     }
   },
   actions: {
-    setUser(data: object, f?: string) {
+    setUser(data: object) {
       this.user = data
     },
     LOGOUT() {
