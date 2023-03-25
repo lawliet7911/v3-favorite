@@ -43,7 +43,7 @@ let props = defineProps({
 
 watch(
   () => props.visible,
-  (n, o) => {
+  (n) => {
     if (n) {
       budgetForm.value.dateMonth = (props as any).data.dateStr
       budgetForm.value.budget = (props as any).data.budget.budget
@@ -77,7 +77,7 @@ const saveBudget = (formRef: FormInstance): void => {
     if (!flag) return
     let params = { ...budgetForm.value }
     let res: any = await addBudget(params)
-    let { data, code } = res
+    let { code } = res
     if (code == 200) {
       ElNotification.success({
         title: '消息',

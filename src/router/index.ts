@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw, NavigationGuardNext } from 'vue-router'
+import { createRouter, createWebHashHistory, NavigationGuardNext } from 'vue-router'
 import { useUserState } from 'src/store/index'
 import { routes } from './routes'
 

@@ -1,4 +1,4 @@
-import Axios, { AxiosInstance } from 'axios'
+import Axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const SERVER_ERROR_TEXT = ' 服务器错误，请稍后重试'

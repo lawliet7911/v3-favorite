@@ -96,7 +96,7 @@ import { Plus, DataLine } from '@element-plus/icons-vue'
 import monthCostChart from './components/monthCostChart.vue'
 import yearCostChart from './components/yearCostChart.vue'
 
-import { onMounted, ref, shallowReactive, shallowRef, watch } from 'vue'
+import { onMounted, ref, shallowRef, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { budgetMonthCost } from 'src/api/bill'
 import { dateFormat } from 'src/utils/date'
@@ -149,8 +149,9 @@ componentMap.set('年度支出表', yearCostChart)
 
 watch(
   () => _data.value.curChart,
-  (n, o) => {
-    _data.value.chartComponent = shallowReactive(componentMap.get(n))
+  (n) => {
+    console.log(componentMap.get(n))
+    _data.value.chartComponent = shallowRef(componentMap.get(n))
   },
   {
     immediate: true
@@ -171,13 +172,13 @@ onMounted(() => {
   getBudget()
 })
 const userState = useUserState()
-const getBudget = async (params: any = {}) => {
+const getBudget = async () => {
   let param = {
     uid: userState.user.id,
     dataStr: _data.value.dateStr
   }
   let res: any = await budgetMonthCost(param)
-  let { data, msg, code } = res
+  let { data } = res
   _data.value.budget = data
 }
 

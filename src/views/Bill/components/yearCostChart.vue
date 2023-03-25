@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import * as echarts from 'echarts'
-import { ECharts, EChartOption } from 'echarts'
+import { ECharts } from 'echarts'
 import { monthChart } from 'src/api/bill'
 import { CHAR_MONTH_OPTIONS } from '../enums'
 import { onMounted, ref } from 'vue'
@@ -14,10 +14,10 @@ const props = defineProps({
 })
 let chartId = ref<string>('')
 
-// onMounted(() => {
-//   chartId.value = Math.ceil(Math.random() * (10 ^ 10)).toString()
-//   getData()
-// })
+onMounted(() => {
+  chartId.value = Math.ceil(Math.random() * (10 ^ 10)).toString()
+  getData()
+})
 
 let chart: ECharts | null = null
 
@@ -35,8 +35,9 @@ const getData = async () => {
     }
   }
   if (chart) chart.dispose()
-  let dom = document.getElementById(chartId.value)
-  chart = echarts.init(dom as any)
+  let dom: HTMLElement | null = document.getElementById(chartId.value)
+  if (!dom) return
+  chart = echarts.init(dom)
   // 绘制图表
   chart.setOption(CHAR_MONTH_OPTIONS as any)
 }

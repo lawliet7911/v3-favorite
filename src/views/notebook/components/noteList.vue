@@ -169,7 +169,7 @@ const itemDel = (note: noteItem) => {
 
 const submitDelete = async (id: string) => {
   let did: string = id
-  let data = await delNote(did)
+  await delNote(did)
   ElNotification.success({
     title: '消息',
     message: '删除成功'
@@ -224,7 +224,7 @@ const addNewCollection = async () => {
     secret: collectForm.value.secret,
     uid: userState.user?.id
   }
-  let response = await saveCollection(params)
+  await saveCollection(params)
   getCollectionList()
   addNewVisible.value = false
   collectForm.value = {
@@ -240,7 +240,7 @@ const submitSave = async () => {
     collectionId: collectForm.value.cid,
     notebookId: currentChoose?.id
   }
-  let { data } = await favorite(params)
+  await favorite(params)
   ElNotification.success({
     title: '消息',
     message: '收藏成功'

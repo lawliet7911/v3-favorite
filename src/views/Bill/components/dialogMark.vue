@@ -75,7 +75,7 @@ const emit = defineEmits(['close', 'success'])
 
 watch(
   () => props.visible,
-  (n, o) => {
+  (n) => {
     if (n) recordForm.value.costDate = dateFormat(new Date(), 'yyyy-MM-dd')
   }
 )
@@ -106,7 +106,7 @@ const saveRecord = (formRef: FormInstance) => {
     if (!flag) return
     let params = { ...recordForm.value }
     let res: any = await addRecord(params)
-    let { data, code, msg } = res
+    let { code } = res
     if (code == 200) {
       ElNotification.success({
         title: '消息',

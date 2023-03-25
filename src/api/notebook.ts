@@ -1,11 +1,11 @@
 import request from 'src/utils/request'
 import qs from 'qs'
-interface BaseResponse {
-  success: boolean
-  data: []
-  message?: string
-  code: number | string
-}
+// interface BaseResponse {
+//   success: boolean
+//   data: []
+//   message?: string
+//   code: number | string
+// }
 // 获取全部
 export function getNotes(data: any) {
   const params = qs.stringify(data)
