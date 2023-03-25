@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-import { RouteParams, useRoute } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 import { getNote } from 'src/api/notebook'

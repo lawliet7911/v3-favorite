@@ -143,9 +143,8 @@ import collectionList from './components/collectionList.vue'
 import { getNote, saveNote, updateNote } from 'src/api/notebook'
 import { upload } from 'src/api/common'
 import storage from 'src/utils/storage'
-// import { objectToString } from 'src/utils/common'
 import { useUserState } from 'src/store'
-import { collectionItem, noteBookData, noteItem, saveModel } from './types'
+import { noteBookData, noteItem, saveModel } from './types'
 const router = useRouter()
 
 const footers: Footers[] = ['markdownTotal', '=', 0, 'scrollSwitch']
@@ -226,7 +225,7 @@ const submitSave = () => {
 
   let data: saveModel = {
     title: _d.formData.name,
-    text: _d.text,
+    text,
     time: dateFormat(new Date()),
     uid: null,
     encryption: 0,

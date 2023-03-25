@@ -1,82 +1,28 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw, NavigationGuardNext } from 'vue-router'
-
-import Home from 'src/views/Home.vue'
-import Login from 'src/views/login/login.vue'
 import { useUserState } from 'src/store/index'
-import BasicLayout from 'src/layout/BasicLayout.vue'
-
-const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/notebook',
-    name: 'Notebook',
-    component: BasicLayout,
-    children: [
-      {
-        path: 'edit/:id?',
-        name: 'NotebookEdit',
-        component: () => import('src/views/notebook/notebookEdit.vue')
-      },
-      {
-        path: 'see/:id',
-        name: 'NotebookWatch',
-        component: () => import('src/views/notebook/notebookWatch.vue')
-      }
-    ]
-  },
-  {
-    // markdown笔记
-    path: '/bill',
-    name: 'Bill',
-    component: BasicLayout,
-    children: [
-      {
-        path: 'watch',
-        name: 'MyBill',
-        component: () => import('src/views/Bill/bill.vue')
-      }
-    ]
-  }
-]
+import { routes } from './routes'
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
 
+function isLoggedIn(userState: any) {
+  return userState.user?.id !== undefined
+}
+
 router.beforeEach((to, from, next: NavigationGuardNext) => {
   const userState = useUserState()
-  // 未登录访问其他页面
-  if (to.name != 'Login') {
-    if (userState.user?.id) {
-      next()
-    } else {
-      // 无用户信息
-      next({ name: 'Login' })
-    }
+  const isUserLoggedIn = isLoggedIn(userState)
+  const isVisitingLoginPage = to.name === 'Login'
+  const isVisitingOtherPage = to.name !== 'Login'
+
+  if (isVisitingOtherPage && !isUserLoggedIn) {
+    next({ name: 'Login' }) // 无用户信息
+  } else if (isVisitingLoginPage && isUserLoggedIn) {
+    next({ name: 'Home' }) // 有用户信息 去首页
   } else {
-    // 访问登录页
-    // next();
-    if (userState.user?.id) {
-      // 有用户信息 去首页
-      next({ name: 'Home' })
-    } else {
-      // 退出登录
-      next()
-      // if (to.params.logout !== undefined) next()
-      // else {
-      //   next({ name: 'Login', params: { logout: !!to.params.logout ? 1 : 0 } })
-      // }
-    }
+    next()
   }
 })
 

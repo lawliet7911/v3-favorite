@@ -1,41 +1,30 @@
+/**
+ * 存
+ * @param key 存取的localStorage的键
+ * @param value 要存储的值
+ * @param expTime 过期时间 单位：小时
+ */
 const storage = {
-  /**
-   * 存
-   * @param key 存取的localStorage的键
-   * @param value 要存储的值
-   * @param expTime 过期时间 单位：小时
-   */
   set(key: string, value: object | string, expTime = 0) {
-    if (typeof value == 'string') localStorage.setItem(key, value)
-    else localStorage.setItem(key, JSON.stringify(value))
+    localStorage.setItem(key, typeof value == 'string' ? value : JSON.stringify(value))
     if (expTime > 0) {
       localStorage.setItem(
-        key + '-expTime',
-        new Date().setHours(parseInt(new Date().getHours().toString()) + expTime).toString()
+        `${key}-expTime`,
+        new Date(Date.now() + expTime * 60 * 60 * 1000).toString()
       )
     }
   },
-  /**
-   * 取
-   * @param key 存取的localStorage的键
-   */
   get(key: string) {
-    const data: string = localStorage.getItem(key) || ''
-    let re
+    const data = localStorage.getItem(key) || ''
     try {
-      re = JSON.parse(data)
-      return re
+      return JSON.parse(data)
     } catch (error) {
       return data
     }
   },
-  /**
-   * 删
-   * @param key 存取的localStorage的键
-   */
   remove(key: string) {
     localStorage.removeItem(key)
-    localStorage.removeItem(key + '-expTime')
+    localStorage.removeItem(`${key}-expTime`)
   }
 }
 

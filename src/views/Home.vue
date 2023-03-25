@@ -3,6 +3,7 @@
 import { onMounted, ref } from 'vue'
 import { Router, useRouter } from 'vue-router'
 import { menuList } from 'src/api/menu'
+import Card from './Card.vue'
 
 interface menuItem {
   id: string
@@ -14,12 +15,12 @@ interface menuItem {
 
 let menus = ref<any[]>([])
 onMounted(async (): Promise<void> => {
-  let { data } = await menuList({})
+  let { data } = await menuList()
   menus.value = data
 })
 
 const router: Router = useRouter()
-const handleNavigate = (item: menuItem, evt: any): void => {
+const handleNavigate = (item: menuItem): void => {
   router.push({ name: item.routeName })
 }
 </script>
@@ -27,18 +28,13 @@ const handleNavigate = (item: menuItem, evt: any): void => {
 <template>
   <div class="home">
     <div class="cards">
-      <el-card
+      <Card
         class="card"
-        :body-style="{ padding: 0 }"
-        shadow="hover"
+        :item="item"
         :key="item.id"
         v-for="item in menus"
-      >
-        <div class="card-item" @click="handleNavigate(item, $event)">
-          <el-icon><component :is="item.icon" /></el-icon>
-          <span>{{ item.name }}</span>
-        </div>
-      </el-card>
+        @navigate="handleNavigate"
+      />
     </div>
   </div>
 </template>
@@ -53,27 +49,6 @@ const handleNavigate = (item: menuItem, evt: any): void => {
     vertical-align: center;
     align-items: center;
     justify-content: center;
-    .card {
-      width: 200px;
-      margin-right: 10px;
-      cursor: pointer;
-      text-align: center;
-      color: #1d1d1d;
-      .card-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-      }
-      &:last-child {
-        margin-right: 0;
-      }
-      i {
-        font-size: 40px;
-        display: block;
-        margin-bottom: 10px;
-      }
-    }
   }
 }
 </style>

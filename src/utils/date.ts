@@ -1,15 +1,15 @@
 /**
- * 格式化
+ * 日期格式化
  * @export
  * @param {(Date | string | number)} date
- * @param {string} [fmt='yyyy-MM-dd HH:mm:ss']
- * @returns
+ * @param {string} [format='yyyy-MM-dd HH:mm:ss']
+ * @returns {string} formatted date string
  */
-export function dateFormat(date: Date | string | number, fmt = 'yyyy-MM-dd HH:mm:ss') {
-  if (typeof date == 'string' || typeof date == 'number') {
+export function dateFormat(date: Date | string | number, format = 'yyyy-MM-dd HH:mm:ss'): string {
+  if (typeof date === 'string' || typeof date === 'number') {
     date = new Date(date)
   }
-  const ss = new Map([
+  const formatMap = new Map([
     [/(M+)/, date.getMonth() + 1],
     [/(d+)/, date.getDate()],
     [/(H+)/, date.getHours()],
@@ -19,8 +19,8 @@ export function dateFormat(date: Date | string | number, fmt = 'yyyy-MM-dd HH:mm
     [/(q+)/, Math.floor((date.getMonth() + 3) / 3)],
     [/(S)/, date.getMilliseconds()]
   ])
-  if (/(y+)/.test(fmt)) {
-    fmt = fmt.replace(
+  if (/(y+)/.test(format)) {
+    format = format.replace(
       RegExp.$1,
       date
         .getFullYear()
@@ -28,13 +28,13 @@ export function dateFormat(date: Date | string | number, fmt = 'yyyy-MM-dd HH:mm
         .substr(4 - RegExp.$1.length)
     )
   }
-  ss.forEach((val, key) => {
-    if (key.test(fmt)) {
-      fmt = fmt.replace(
+  formatMap.forEach((value, key) => {
+    if (key.test(format)) {
+      format = format.replace(
         RegExp.$1,
-        1 == RegExp.$1.length ? val.toString() : `00${val}`.substr(val.toString().length)
+        1 === RegExp.$1.length ? value.toString() : `00${value}`.substr(value.toString().length)
       )
     }
   })
-  return fmt
+  return format
 }

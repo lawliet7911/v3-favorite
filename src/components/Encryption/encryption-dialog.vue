@@ -61,7 +61,7 @@ let _data = ref<encryption>({
 const encryptionForm: any = ref<FormInstance>()
 
 const rules: FormRules = {
-  pws: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  pwd: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 const beforeClose = () => {
   emit('close')

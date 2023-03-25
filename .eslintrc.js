@@ -11,6 +11,7 @@ module.exports = {
     'plugin:prettier/recommended'
   ],
   overrides: [],
+  ignorePatterns: ['dist/*'],
   parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 'latest',
@@ -19,6 +20,7 @@ module.exports = {
   },
   plugins: ['vue', '@typescript-eslint', 'prettier'],
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': 'error',
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off'

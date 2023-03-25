@@ -1,4 +1,2 @@
-import Encryption from './Encryption'
-import MyAvatar from './Avatar'
-
-export { Encryption, MyAvatar }
+export { default as Encryption } from './Encryption'
+export { default as Avatar } from './Avatar'
